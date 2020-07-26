@@ -10,7 +10,6 @@ export default class Board extends React.Component{
         row[j] = {
           id: `${i+1}${String.fromCharCode(65+j)}`,
           color: (i % 2 === 0 && j % 2 === 0) || (i % 2 !== 0 && j % 2 !== 0) ? 'black' : 'white',
-          piece: null,
           activeState: false
         }
       }
@@ -18,7 +17,8 @@ export default class Board extends React.Component{
     }
     this.state = {
       previousMoves : [],
-      actualBoard : board
+      actualBoard : board,
+      pieces: []
     }
   }
   render(){
