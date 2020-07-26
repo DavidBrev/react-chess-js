@@ -8,8 +8,8 @@ export default class Board extends React.Component{
       let row = [];
       for(let j=0; j<8; j++){
         row[j] = {
-          id: `${i+1}${String.fromCharCode(65+j)}`,
-          color: (i % 2 === 0 && j % 2 === 0) || (i % 2 !== 0 && j % 2 !== 0) ? 'black' : 'white',
+          id: `${8-i}${String.fromCharCode(65+j)}`,
+          color: (i % 2 === 0 && j % 2 === 0) || (i % 2 !== 0 && j % 2 !== 0) ? 'colorWhite' : 'colorBlack',
           activeState: false
         }
       }
@@ -23,9 +23,20 @@ export default class Board extends React.Component{
   }
   render(){
     return(
-      <div>
-        {/*Generate Board here*/console.log(this.state.actualBoard)}
-      </div>
+      <table>
+        {
+          /*Generate Board here*/
+          this.state.actualBoard.map(row => (
+            <tr>
+              {
+                row.map(tile => (
+                  <td class={`tile ${tile.color}${tile.activeState ? ' path' : ''}`} id={`${tile.id}`} ></td>
+                ))
+              }
+            </tr>
+          ))
+        }
+      </table>
     )
   }
 }
