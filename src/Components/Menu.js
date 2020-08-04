@@ -4,7 +4,7 @@ export default class Menu extends React.Component{
   render(){
     return(
       <div>
-        <button>New game</button>
+        <button onClick={this.props.onGenerateNewBoard}>New game</button>
         <button>Save game</button>
         <button>Load game</button>
         <div>

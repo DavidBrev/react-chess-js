@@ -28,3 +28,41 @@ table{
 .colorWhite{
   background-color: #ffce9e;
 }
+
+.blackBishop{
+  background-image: url('./img/pieces/bb.svg');
+}
+.blackKing{
+  background-image: url('./img/pieces/bk.svg');
+}
+.blackKnight{
+  background-image: url('./img/pieces/bn.svg');
+}
+.blackPawn{
+  background-image: url('./img/pieces/bp.svg');
+}
+.blackQueen{
+  background-image: url('./img/pieces/bq.svg');
+}
+.blackRook{
+  background-image: url('./img/pieces/br.svg');
+}
+
+.whiteBishop{
+  background-image: url('./img/pieces/wb.svg');
+}
+.whiteKing{
+  background-image: url('./img/pieces/wk.svg');
+}
+.whiteKnight{
+  background-image: url('./img/pieces/wn.svg');
+}
+.whitePawn{
+  background-image: url('./img/pieces/wp.svg');
+}
+.whiteQueen{
+  background-image: url('./img/pieces/wq.svg');
+}
+.whiteRook{
+  background-image: url('./img/pieces/wr.svg');
+}
