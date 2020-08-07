@@ -1,7 +1,6 @@
 import React from 'react';
 import Menu from './Components/Menu';
 import Board from './Components/Board';
-import Piece from './Classes/Piece';
 
 export default class App extends React.Component{
   constructor(props){
@@ -30,46 +29,52 @@ export default class App extends React.Component{
     }
   }
   generateNewBoardHandler(){
-    let newPieces = [];
-    newPieces[0] = new Piece('whiteRook',    '1A');
-    newPieces[1] = new Piece('whiteKnight',  '1B');
-    newPieces[2] = new Piece('whiteBishop',  '1C');
-    newPieces[3] = new Piece('whiteQueen',   '1D');
-    newPieces[4] = new Piece('whiteKing',    '1E');
-    newPieces[5] = new Piece('whiteBishop',  '1F');
-    newPieces[6] = new Piece('whiteKnight',  '1G');
-    newPieces[7] = new Piece('whiteRook',    '1H');
-    newPieces[8] = new Piece('whitePawn',    '2A');
-    newPieces[9] = new Piece('whitePawn',    '2B');
-    newPieces[10] = new Piece('whitePawn',   '2C');
-    newPieces[11] = new Piece('whitePawn',   '2D');
-    newPieces[12] = new Piece('whitePawn',   '2E');
-    newPieces[13] = new Piece('whitePawn',   '2F');
-    newPieces[14] = new Piece('whitePawn',   '2G');
-    newPieces[15] = new Piece('whitePawn',   '2H');
-    newPieces[16] = new Piece('blackRook',   '8A');
-    newPieces[17] = new Piece('blackKnight', '8B');
-    newPieces[18] = new Piece('blackBishop', '8C');
-    newPieces[19] = new Piece('blackQueen',  '8D');
-    newPieces[20] = new Piece('blackKing',   '8E');
-    newPieces[21] = new Piece('blackBishop', '8F');
-    newPieces[22] = new Piece('blackKnight', '8G');
-    newPieces[23] = new Piece('blackRook',   '8H');
-    newPieces[24] = new Piece('blackPawn',   '7A');
-    newPieces[25] = new Piece('blackPawn',   '7B');
-    newPieces[26] = new Piece('blackPawn',   '7C');
-    newPieces[27] = new Piece('blackPawn',   '7D');
-    newPieces[28] = new Piece('blackPawn',   '7E');
-    newPieces[29] = new Piece('blackPawn',   '7F');
-    newPieces[30] = new Piece('blackPawn',   '7G');
-    newPieces[31] = new Piece('blackPawn',   '7H');
-    this.pieces = newPieces;
-    this.setState({isWhiteTurn : true});
-    this.updateBoard();
+    let board = JSON.parse(JSON.stringify(this.state.actualBoard));
+    for(let i=2; i<6; i++){
+      for(let tile of board[i]){
+        tile.piece = null;
+      }
+    }
+    board[0][0].piece = 'blackRook';
+    board[0][1].piece = 'blackKnight';
+    board[0][2].piece = 'blackBishop';
+    board[0][3].piece = 'blackQueen';
+    board[0][4].piece = 'blackKing';
+    board[0][5].piece = 'blackBishop';
+    board[0][6].piece = 'blackKnight';
+    board[0][7].piece = 'blackRook';
+    board[1][0].piece = 'blackPawn';
+    board[1][1].piece = 'blackPawn';
+    board[1][2].piece = 'blackPawn';
+    board[1][3].piece = 'blackPawn';
+    board[1][4].piece = 'blackPawn';
+    board[1][5].piece = 'blackPawn';
+    board[1][6].piece = 'blackPawn';
+    board[1][7].piece = 'blackPawn';
+    board[7][0].piece = 'whiteRook';
+    board[7][1].piece = 'whiteKnight';
+    board[7][2].piece = 'whiteBishop';
+    board[7][3].piece = 'whiteQueen';
+    board[7][4].piece = 'whiteKing';
+    board[7][5].piece = 'whiteBishop';
+    board[7][6].piece = 'whiteKnight';
+    board[7][7].piece = 'whiteRook';
+    board[6][0].piece = 'whitePawn';
+    board[6][1].piece = 'whitePawn';
+    board[6][2].piece = 'whitePawn';
+    board[6][3].piece = 'whitePawn';
+    board[6][4].piece = 'whitePawn';
+    board[6][5].piece = 'whitePawn';
+    board[6][6].piece = 'whitePawn';
+    board[6][7].piece = 'whitePawn';
+    this.setState({
+      isWhiteTurn : true,
+      actualBoard : board
+    });
   }
   clickTileHandler(tile){
     console.log(tile);
-    if(this.focus === null){
+    if(this.state.focus === null){
       if(tile.piece === null) return;
       switch(tile.piece){
         case 'whitePawn':
@@ -132,25 +137,6 @@ export default class App extends React.Component{
       actualBoard: board,
       focus: tileId
     });
-  }
-  updateBoard(){
-    let newBoard = JSON.parse(JSON.stringify(this.state.actualBoard));
-    for(let row of newBoard){
-      for(let tile of row){
-        let found = false;
-        for(let piece of this.pieces){
-          if(piece.GetPosition() === tile.id){
-            tile.piece = piece.GetType();
-            found = true;
-            break;
-          }
-        }
-        if(!found) tile.piece = null;
-      }
-    }
-    this.setState({
-      actualBoard : newBoard
-    })
   }
   render(){
     return(
