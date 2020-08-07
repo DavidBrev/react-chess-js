@@ -7,6 +7,7 @@ export default class App extends React.Component{
   constructor(props){
     super(props);
     this.generateNewBoardHandler = this.generateNewBoardHandler.bind(this);
+    this.clickTileHandler = this.clickTileHandler.bind(this);
     let board = [];
     for(let i=0; i<8; i++){
       let row = [];
@@ -23,7 +24,9 @@ export default class App extends React.Component{
     this.pieces = [];
     this.previousMoves = [];
     this.state = {
-      actualBoard : board
+      actualBoard : board,
+      isWhiteTurn : null,
+      focus : null
     }
   }
   generateNewBoardHandler(){
@@ -61,7 +64,74 @@ export default class App extends React.Component{
     newPieces[30] = new Piece('blackPawn',   '7G');
     newPieces[31] = new Piece('blackPawn',   '7H');
     this.pieces = newPieces;
+    this.setState({isWhiteTurn : true});
     this.updateBoard();
+  }
+  clickTileHandler(tile){
+    console.log(tile);
+    if(this.focus === null){
+      if(tile.piece === null) return;
+      switch(tile.piece){
+        case 'whitePawn':
+          this.pawnPossibleMoves(tile.id, true);
+          break;
+        case 'blackPawn':
+          this.pawnPossibleMoves(tile.id, false);
+          break;
+        default:
+          break;
+      }
+    }
+    else{
+
+    }
+  }
+  pawnPossibleMoves(tileId, isWhite){
+    let possibleMoves = [];
+    let x = tileId.charCodeAt(1)-65;
+    let y = 8-Number(tileId[0]);
+    let board = JSON.parse(JSON.stringify(this.state.actualBoard));
+    if(isWhite){
+      if(y === 6){
+        possibleMoves.push({x : x, y: y-1});
+        possibleMoves.push({x : x, y: y-2});
+        if(x+1 <= 7 && board[y-1][x+1].piece != null && board[y-1][x+1].piece.startsWidth('black')) possibleMoves.push({x : x+1, y: y-1});
+        if(x-1 >= 0 && board[y-1][x-1].piece != null && board[y-1][x-1].piece.startsWidth('black')) possibleMoves.push({x : x-1, y: y-1});
+      }
+      else{
+        //Should normally always happen since
+        //Pawns transform themselves in other pieces at the end of the board
+        if(y-1 >= 0){
+          possibleMoves.push({x : x, y: y-1});
+          if(x+1 <= 7 && board[y-1][x+1].piece != null && board[y-1][x+1].piece.startsWidth('black')) possibleMoves.push({x : x+1, y: y-1});
+          if(x-1 >= 0 && board[y-1][x-1].piece != null && board[y-1][x-1].piece.startsWidth('black')) possibleMoves.push({x : x-1, y: y-1});
+        }
+      }
+    }
+    else{
+      if(y === 1){
+        possibleMoves.push({x : x, y: y+1});
+        possibleMoves.push({x : x, y: y+2});
+        if(x+1 <= 7 && board[y+1][x+1].piece != null && board[y+1][x+1].piece.startsWidth('white')) possibleMoves.push({x : x+1, y: y+1});
+        if(x-1 >= 0 && board[y+1][x-1].piece != null && board[y+1][x-1].piece.startsWidth('white')) possibleMoves.push({x : x-1, y: y+1});
+      }
+      else{
+        //Should normally always happen since
+        //Pawns transform themselves in other pieces at the end of the board
+        if(y+1 <= 7){
+          possibleMoves.push({x : x, y: y+1});
+          if(x+1 <= 7 && board[y+1][x+1].piece != null && board[y+1][x+1].piece.startsWidth('white')) possibleMoves.push({x : x+1, y: y+1});
+          if(x-1 >= 0 && board[y+1][x-1].piece != null && board[y+1][x-1].piece.startsWidth('white')) possibleMoves.push({x : x-1, y: y+1});
+        }
+      }
+    }
+    for(let move of possibleMoves){
+      board[move.y][move.x].activeState = true;
+    }
+    this.setState({
+      actualBoard: board,
+      focus: tileId
+    });
   }
   updateBoard(){
     let newBoard = JSON.parse(JSON.stringify(this.state.actualBoard));
@@ -78,7 +148,6 @@ export default class App extends React.Component{
         if(!found) tile.piece = null;
       }
     }
-    console.log(newBoard);
     this.setState({
       actualBoard : newBoard
     })
@@ -87,7 +156,7 @@ export default class App extends React.Component{
     return(
       <div>
         <Menu onGenerateNewBoard={this.generateNewBoardHandler} />
-        <Board actualBoard={this.state.actualBoard} />
+        <Board actualBoard={this.state.actualBoard} onTileClick={this.clickTileHandler} />
       </div>
     );
   }

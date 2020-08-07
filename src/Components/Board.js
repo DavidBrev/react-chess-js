@@ -11,7 +11,7 @@ export default class Board extends React.Component{
               <tr key={i}>
                 {
                   row.map(tile => (
-                    <td key={tile.id} className={`tile ${tile.color}${tile.piece !== null ? ` ${tile.piece}` : ''}`} id={`${tile.id}`} ></td>
+                    <td onClick={() => this.props.onTileClick(tile)} key={tile.id} className={`tile ${tile.color}${tile.piece !== null ? ` ${tile.piece}` : ''}`} id={`${tile.id}`} ></td>
                   ))
                 }
               </tr>
