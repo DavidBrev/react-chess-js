@@ -20,7 +20,6 @@ export default class App extends React.Component{
       }
       board[i] = row;
     }
-    this.pieces = [];
     this.previousMoves = [];
     this.state = {
       actualBoard : board,
@@ -33,6 +32,7 @@ export default class App extends React.Component{
     for(let i=2; i<6; i++){
       for(let tile of board[i]){
         tile.piece = null;
+        tile.activeState = false;
       }
     }
     board[0][0].piece = 'blackRook';
@@ -69,7 +69,8 @@ export default class App extends React.Component{
     board[6][7].piece = 'whitePawn';
     this.setState({
       isWhiteTurn : true,
-      actualBoard : board
+      actualBoard : board,
+      focus: null
     });
   }
   clickTileHandler(tile){
@@ -88,7 +89,18 @@ export default class App extends React.Component{
       }
     }
     else{
-
+      if(tile.id === this.state.focus){
+        let board = JSON.parse(JSON.stringify(this.state.actualBoard));
+        for(let row of board){
+          for(let tile of row){
+            tile.activeState = false;
+          }
+        }
+        this.setState({
+          actualBoard: board,
+          focus : null
+        })
+      }
     }
   }
   pawnPossibleMoves(tileId, isWhite){
