@@ -142,6 +142,7 @@ export default class App extends React.Component{
       }
     }
   }
+  //Could use a rework
   pawnPossibleMoves(tileId, isWhite){
     let possibleMoves = [];
     let x = tileId.charCodeAt(1)-65;
@@ -199,7 +200,6 @@ export default class App extends React.Component{
     let x = tileId.charCodeAt(1)-65;
     let y = 8-Number(tileId[0]);
     let board = JSON.parse(JSON.stringify(this.state.actualBoard));
-
     if(y+2 < 8){
       if(x+2 < 8){
         if(board[y+2][x+1].piece === null || (isWhite ? board[y+2][x+1].piece.startsWith('black') : board[y+2][x+1].piece.startsWith('white'))) possibleMoves.push({x : x+1, y : y+2});
