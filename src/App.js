@@ -32,7 +32,7 @@ export default class App extends React.Component{
   }
   generateNewBoardHandler(){
     let board = JSON.parse(JSON.stringify(this.state.actualBoard));
-    for(let i=2; i<6; i++){
+    for(let i=0; i<8; i++){
       for(let tile of board[i]){
         tile.piece = null;
         tile.activeState = false;
@@ -94,6 +94,12 @@ export default class App extends React.Component{
           break;
         case 'blackKnight':
           if(!this.state.isWhiteTurn) this.knightPossibleMoves(tile.id, false);
+          break;
+        case 'whiteRook':
+          if(this.state.isWhiteTurn) this.rookPossibleMoves(tile.id, true);
+          break;
+        case 'blackRook':
+          if(!this.state.isWhiteTurn) this.rookPossibleMoves(tile.id, false);
           break;
         default:
           break;
@@ -246,6 +252,88 @@ export default class App extends React.Component{
       }
       if(x+2 < 8){
         if(board[y-1][x+2].piece === null || (isWhite ? board[y-1][x+2].piece.startsWith('black') : board[y-1][x+2].piece.startsWith('white'))) possibleMoves.push({x : x+2, y : y-1});
+      }
+    }
+    for(let move of possibleMoves){
+      board[move.y][move.x].activeState = true;
+    }
+    this.setState({
+      actualBoard: board,
+      focus: tileId
+    });
+  }
+  rookPossibleMoves(tileId, isWhite){
+    let possibleMoves = [];
+    let x = tileId.charCodeAt(1)-65;
+    let y = 8-Number(tileId[0]);
+    let board = JSON.parse(JSON.stringify(this.state.actualBoard));
+    //up
+    let pathEnded = false;
+    for(let i=1; !pathEnded; i++){
+      console.log("test");
+      if(y-i < 0){
+        pathEnded = true;
+      }
+      else if(board[y-i][x].piece !== null){
+        if(isWhite ? board[y-i][x].piece.startsWith('black') : board[y-i][x].piece.startsWith('white')){
+          possibleMoves.push({x : x, y : y-i});
+          pathEnded = true;
+        }
+        else pathEnded = true;
+      }
+      else{
+        possibleMoves.push({x : x, y : y-i});
+      }
+    }
+    //down
+    pathEnded = false;
+    for(let i=1; !pathEnded; i++){
+      if(y+i > 7){
+        pathEnded = true;
+      }
+      else if(board[y+i][x].piece !== null){
+        if(isWhite ? board[y+i][x].piece.startsWith('black') : board[y+i][x].piece.startsWith('white')){
+          possibleMoves.push({x : x, y : y+i});
+          pathEnded = true;
+        }
+        else pathEnded = true;
+      }
+      else{
+        possibleMoves.push({x : x, y : y+i});
+      }
+    }
+    //left
+    pathEnded = false;
+    for(let i=1; !pathEnded; i++){
+      if(x-i < 0){
+        pathEnded = true;
+      }
+      else if(board[y][x-i].piece !== null){
+        if(isWhite ? board[y][x-i].piece.startsWith('black') : board[y][x-i].piece.startsWith('white')){
+          possibleMoves.push({x : x-i, y : y});
+          pathEnded = true;
+        }
+        else pathEnded = true;
+      }
+      else{
+        possibleMoves.push({x : x-i, y : y});
+      }
+    }
+    //right
+    pathEnded = false;
+    for(let i=1; !pathEnded; i++){
+      if(x+i > 7){
+        pathEnded = true;
+      }
+      else if(board[y][x+i].piece !== null){
+        if(isWhite ? board[y][x+i].piece.startsWith('black') : board[y][x+i].piece.startsWith('white')){
+          possibleMoves.push({x : x+i, y : y});
+          pathEnded = true;
+        }
+        else pathEnded = true;
+      }
+      else{
+        possibleMoves.push({x : x+i, y : y});
       }
     }
     for(let move of possibleMoves){
