@@ -32,7 +32,6 @@ table{
 .colorWhite{
   background-color: #ffce9e;
 }
-
 .blackBishop{
   background-image: url('./img/pieces/bb.svg');
 }
@@ -71,4 +70,40 @@ table{
 }
 .activeState{
   background-image: url('./img/active.svg');
+}
+.activeState.blackBishop{
+  background-image: url('./img/active.svg'), url('./img/pieces/bb.svg');
+}
+.activeState.blackKing{
+  background-image: url('./img/active.svg'), url('./img/pieces/bk.svg');
+}
+.activeState.blackKnight{
+  background-image: url('./img/active.svg'), url('./img/pieces/bn.svg');
+}
+.activeState.blackPawn{
+  background-image: url('./img/active.svg'), url('./img/pieces/bp.svg');
+}
+.activeState.blackQueen{
+  background-image: url('./img/active.svg'), url('./img/pieces/bq.svg');
+}
+.activeState.blackRook{
+  background-image: url('./img/active.svg'), url('./img/pieces/br.svg');
+}
+.activeState.whiteBishop{
+  background-image: url('./img/active.svg'), url('./img/pieces/wb.svg');
+}
+.activeState.whiteKing{
+  background-image: url('./img/active.svg'), url('./img/pieces/wk.svg');
+}
+.activeState.whiteKnight{
+  background-image: url('./img/active.svg'), url('./img/pieces/wn.svg');
+}
+.activeState.whitePawn{
+  background-image: url('./img/active.svg'), url('./img/pieces/wp.svg');
+}
+.activeState.whiteQueen{
+  background-image: url('./img/active.svg'), url('./img/pieces/wq.svg');
+}
+.activeState.whiteRook{
+  background-image: url('./img/active.svg'), url('./img/pieces/wr.svg');
 }

@@ -89,8 +89,26 @@ export default class App extends React.Component{
       }
     }
     else{
+      let board = JSON.parse(JSON.stringify(this.state.actualBoard));
       if(tile.id === this.state.focus){
-        let board = JSON.parse(JSON.stringify(this.state.actualBoard));
+        for(let row of board){
+          for(let tile of row){
+            tile.activeState = false;
+          }
+        }
+        this.setState({
+          actualBoard: board,
+          focus : null
+        })
+      }
+      else if(tile.activeState){
+        let x = tile.id.charCodeAt(1)-65;
+        let y = 8-Number(tile.id[0]);
+        let focusX = this.state.focus.charCodeAt(1)-65;
+        let focusY = 8-Number(this.state.focus[0]);
+        let p = board[focusY][focusX].piece;
+        board[focusY][focusX].piece = null;
+        board[y][x].piece = p;
         for(let row of board){
           for(let tile of row){
             tile.activeState = false;
@@ -114,16 +132,17 @@ export default class App extends React.Component{
           possibleMoves.push({x : x, y: y-1});
           if(board[y-2][x].piece === null) possibleMoves.push({x : x, y: y-2});
         }
-        if(x+1 <= 7 && board[y-1][x+1].piece != null && board[y-1][x+1].piece.startsWidth('black')) possibleMoves.push({x : x+1, y: y-1});
-        if(x-1 >= 0 && board[y-1][x-1].piece != null && board[y-1][x-1].piece.startsWidth('black')) possibleMoves.push({x : x-1, y: y-1});
+        if(x+1 <= 7 && board[y-1][x+1].piece !== null && board[y-1][x+1].piece.startsWith('black')) possibleMoves.push({x : x+1, y: y-1});
+        if(x-1 >= 0 && board[y-1][x-1].piece !== null && board[y-1][x-1].piece.startsWith('black')) possibleMoves.push({x : x-1, y: y-1});
       }
       else{
         //Should normally always happen since
         //Pawns transform themselves in other pieces at the end of the board
         if(y-1 >= 0){
+          console.log(board[y-1][x+1].piece);
           if(board[y-1][x].piece === null) possibleMoves.push({x : x, y: y-1});
-          if(x+1 <= 7 && board[y-1][x+1].piece != null && board[y-1][x+1].piece.startsWidth('black')) possibleMoves.push({x : x+1, y: y-1});
-          if(x-1 >= 0 && board[y-1][x-1].piece != null && board[y-1][x-1].piece.startsWidth('black')) possibleMoves.push({x : x-1, y: y-1});
+          if(x+1 <= 7 && board[y-1][x+1].piece !== null && board[y-1][x+1].piece.startsWith('black')) possibleMoves.push({x : x+1, y: y-1});
+          if(x-1 >= 0 && board[y-1][x-1].piece !== null && board[y-1][x-1].piece.startsWith('black')) possibleMoves.push({x : x-1, y: y-1});
         }
       }
     }
@@ -133,16 +152,16 @@ export default class App extends React.Component{
           possibleMoves.push({x : x, y: y+1});
           if(board[y+2][x].piece === null) possibleMoves.push({x : x, y: y+2});
         }
-        if(x+1 <= 7 && board[y+1][x+1].piece != null && board[y+1][x+1].piece.startsWidth('white')) possibleMoves.push({x : x+1, y: y+1});
-        if(x-1 >= 0 && board[y+1][x-1].piece != null && board[y+1][x-1].piece.startsWidth('white')) possibleMoves.push({x : x-1, y: y+1});
+        if(x+1 <= 7 && board[y+1][x+1].piece !== null && board[y+1][x+1].piece.startsWith('white')) possibleMoves.push({x : x+1, y: y+1});
+        if(x-1 >= 0 && board[y+1][x-1].piece !== null && board[y+1][x-1].piece.startsWith('white')) possibleMoves.push({x : x-1, y: y+1});
       }
       else{
         //Should normally always happen since
         //Pawns transform themselves in other pieces at the end of the board
         if(y+1 <= 7){
           if(board[y+1][x].piece === null) possibleMoves.push({x : x, y: y+1});
-          if(x+1 <= 7 && board[y+1][x+1].piece != null && board[y+1][x+1].piece.startsWidth('white')) possibleMoves.push({x : x+1, y: y+1});
-          if(x-1 >= 0 && board[y+1][x-1].piece != null && board[y+1][x-1].piece.startsWidth('white')) possibleMoves.push({x : x-1, y: y+1});
+          if(x+1 <= 7 && board[y+1][x+1].piece !== null && board[y+1][x+1].piece.startsWith('white')) possibleMoves.push({x : x+1, y: y+1});
+          if(x-1 >= 0 && board[y+1][x-1].piece !== null && board[y+1][x-1].piece.startsWith('white')) possibleMoves.push({x : x-1, y: y+1});
         }
       }
     }
