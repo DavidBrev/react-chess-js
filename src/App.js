@@ -110,8 +110,10 @@ export default class App extends React.Component{
     let board = JSON.parse(JSON.stringify(this.state.actualBoard));
     if(isWhite){
       if(y === 6){
-        possibleMoves.push({x : x, y: y-1});
-        possibleMoves.push({x : x, y: y-2});
+        if(board[y-1][x].piece === null){
+          possibleMoves.push({x : x, y: y-1});
+          if(board[y-2][x].piece === null) possibleMoves.push({x : x, y: y-2});
+        }
         if(x+1 <= 7 && board[y-1][x+1].piece != null && board[y-1][x+1].piece.startsWidth('black')) possibleMoves.push({x : x+1, y: y-1});
         if(x-1 >= 0 && board[y-1][x-1].piece != null && board[y-1][x-1].piece.startsWidth('black')) possibleMoves.push({x : x-1, y: y-1});
       }
@@ -119,7 +121,7 @@ export default class App extends React.Component{
         //Should normally always happen since
         //Pawns transform themselves in other pieces at the end of the board
         if(y-1 >= 0){
-          possibleMoves.push({x : x, y: y-1});
+          if(board[y-1][x].piece === null) possibleMoves.push({x : x, y: y-1});
           if(x+1 <= 7 && board[y-1][x+1].piece != null && board[y-1][x+1].piece.startsWidth('black')) possibleMoves.push({x : x+1, y: y-1});
           if(x-1 >= 0 && board[y-1][x-1].piece != null && board[y-1][x-1].piece.startsWidth('black')) possibleMoves.push({x : x-1, y: y-1});
         }
@@ -127,8 +129,10 @@ export default class App extends React.Component{
     }
     else{
       if(y === 1){
-        possibleMoves.push({x : x, y: y+1});
-        possibleMoves.push({x : x, y: y+2});
+        if(board[y+1][x].piece === null){
+          possibleMoves.push({x : x, y: y+1});
+          if(board[y+2][x].piece === null) possibleMoves.push({x : x, y: y+2});
+        }
         if(x+1 <= 7 && board[y+1][x+1].piece != null && board[y+1][x+1].piece.startsWidth('white')) possibleMoves.push({x : x+1, y: y+1});
         if(x-1 >= 0 && board[y+1][x-1].piece != null && board[y+1][x-1].piece.startsWidth('white')) possibleMoves.push({x : x-1, y: y+1});
       }
@@ -136,7 +140,7 @@ export default class App extends React.Component{
         //Should normally always happen since
         //Pawns transform themselves in other pieces at the end of the board
         if(y+1 <= 7){
-          possibleMoves.push({x : x, y: y+1});
+          if(board[y+1][x].piece === null) possibleMoves.push({x : x, y: y+1});
           if(x+1 <= 7 && board[y+1][x+1].piece != null && board[y+1][x+1].piece.startsWidth('white')) possibleMoves.push({x : x+1, y: y+1});
           if(x-1 >= 0 && board[y+1][x-1].piece != null && board[y+1][x-1].piece.startsWidth('white')) possibleMoves.push({x : x-1, y: y+1});
         }
