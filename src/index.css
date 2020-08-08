@@ -7,14 +7,13 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
 }
-img{
-  padding: 0;
-  margin: 0;
-}
-
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+img{
+  padding: 0;
+  margin: 0;
 }
 table{
   margin-left: auto;
@@ -31,6 +30,9 @@ table{
 }
 .colorWhite{
   background-color: #ffce9e;
+}
+.onFocus{
+  background-color: #7F674F;
 }
 .blackBishop{
   background-image: url('./img/pieces/bb.svg');
@@ -106,4 +108,29 @@ table{
 }
 .activeState.whiteRook{
   background-image: url('./img/active.svg'), url('./img/pieces/wr.svg');
+}
+.deathBox{
+  width: 100px;
+  height: 400px;
+}
+.whiteTaken{
+  display: flex;
+  flex-direction: row-reverse;
+  flex-wrap: wrap;
+  align-content: flex-start;
+}
+.blackTaken{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap-reverse;
+  align-content: flex-start;
+}
+.gameDisplay{
+  width: 650px;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
 }

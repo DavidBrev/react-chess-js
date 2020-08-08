@@ -14,7 +14,7 @@ export default class Board extends React.Component{
                     <td
                       onClick={() => this.props.onTileClick(tile)}
                       key={tile.id}
-                      className={`tile ${tile.color}${tile.piece !== null ? ` ${tile.piece}` : ''}${tile.activeState ? ' activeState' : ''}`}
+                      className={`tile ${tile.color}${tile.piece !== null ? ` ${tile.piece}` : ''}${tile.activeState ? ' activeState' : ''}${this.props.focus === tile.id ? ' onFocus' : ''}`}
                       id={`${tile.id}`} >
                     </td>
                   ))

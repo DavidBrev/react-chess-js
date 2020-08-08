@@ -1,6 +1,7 @@
 import React from 'react';
 import Menu from './Components/Menu';
 import Board from './Components/Board';
+import PiecesTaken from './Components/PiecesTaken';
 
 export default class App extends React.Component{
   constructor(props){
@@ -23,6 +24,8 @@ export default class App extends React.Component{
     this.previousMoves = [];
     this.state = {
       actualBoard : board,
+      whiteTaken: [],
+      blackTaken: [],
       isWhiteTurn : null,
       focus : null
     }
@@ -102,11 +105,18 @@ export default class App extends React.Component{
         })
       }
       else if(tile.activeState){
+        let wT = this.state.whiteTaken.slice();
+        let bT = this.state.blackTaken.slice();
         let x = tile.id.charCodeAt(1)-65;
         let y = 8-Number(tile.id[0]);
         let focusX = this.state.focus.charCodeAt(1)-65;
         let focusY = 8-Number(this.state.focus[0]);
         let p = board[focusY][focusX].piece;
+        let t = board[y][x].piece;
+        if(t !== null){
+          if(t.startsWith('white')) wT.push(t);
+          else bT.push(t);
+        }
         board[focusY][focusX].piece = null;
         board[y][x].piece = p;
         for(let row of board){
@@ -116,7 +126,9 @@ export default class App extends React.Component{
         }
         this.setState({
           actualBoard: board,
-          focus : null
+          focus : null,
+          whiteTaken : wT,
+          blackTaken : bT
         })
       }
     }
@@ -177,7 +189,11 @@ export default class App extends React.Component{
     return(
       <div>
         <Menu onGenerateNewBoard={this.generateNewBoardHandler} />
-        <Board actualBoard={this.state.actualBoard} onTileClick={this.clickTileHandler} />
+        <div className="gameDisplay">
+          <PiecesTaken pieces={this.state.whiteTaken} isWhite={true} />
+          <Board actualBoard={this.state.actualBoard} onTileClick={this.clickTileHandler} focus={this.state.focus} />
+          <PiecesTaken pieces={this.state.blackTaken} isWhite={false} />
+        </div>
       </div>
     );
   }
