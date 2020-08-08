@@ -27,7 +27,7 @@ export default class App extends React.Component{
       whiteTaken: [],
       blackTaken: [],
       isWhiteTurn : null,
-      focus : null
+      focus : null,
     }
   }
   generateNewBoardHandler(){
@@ -73,7 +73,9 @@ export default class App extends React.Component{
     this.setState({
       isWhiteTurn : true,
       actualBoard : board,
-      focus: null
+      focus: null,
+      whiteTaken : [],
+      blackTaken : []
     });
   }
   clickTileHandler(tile){
@@ -82,10 +84,16 @@ export default class App extends React.Component{
       if(tile.piece === null) return;
       switch(tile.piece){
         case 'whitePawn':
-          this.pawnPossibleMoves(tile.id, true);
+          if(this.state.isWhiteTurn) this.pawnPossibleMoves(tile.id, true);
           break;
         case 'blackPawn':
-          this.pawnPossibleMoves(tile.id, false);
+          if(!this.state.isWhiteTurn) this.pawnPossibleMoves(tile.id, false);
+          break;
+        case 'whiteKnight':
+          if(this.state.isWhiteTurn) this.knightPossibleMoves(tile.id, true);
+          break;
+        case 'blackKnight':
+          if(!this.state.isWhiteTurn) this.knightPossibleMoves(tile.id, false);
           break;
         default:
           break;
@@ -128,7 +136,8 @@ export default class App extends React.Component{
           actualBoard: board,
           focus : null,
           whiteTaken : wT,
-          blackTaken : bT
+          blackTaken : bT,
+          isWhiteTurn : !this.state.isWhiteTurn
         })
       }
     }
@@ -175,6 +184,68 @@ export default class App extends React.Component{
           if(x+1 <= 7 && board[y+1][x+1].piece !== null && board[y+1][x+1].piece.startsWith('white')) possibleMoves.push({x : x+1, y: y+1});
           if(x-1 >= 0 && board[y+1][x-1].piece !== null && board[y+1][x-1].piece.startsWith('white')) possibleMoves.push({x : x-1, y: y+1});
         }
+      }
+    }
+    for(let move of possibleMoves){
+      board[move.y][move.x].activeState = true;
+    }
+    this.setState({
+      actualBoard: board,
+      focus: tileId
+    });
+  }
+  knightPossibleMoves(tileId, isWhite){
+    let possibleMoves = [];
+    let x = tileId.charCodeAt(1)-65;
+    let y = 8-Number(tileId[0]);
+    let board = JSON.parse(JSON.stringify(this.state.actualBoard));
+
+    if(y+2 < 8){
+      if(x+2 < 8){
+        if(board[y+2][x+1].piece === null || (isWhite ? board[y+2][x+1].piece.startsWith('black') : board[y+2][x+1].piece.startsWith('white'))) possibleMoves.push({x : x+1, y : y+2});
+        if(board[y+1][x+2].piece === null || (isWhite ? board[y+1][x+2].piece.startsWith('black') : board[y+1][x+2].piece.startsWith('white'))) possibleMoves.push({x : x+2, y : y+1});
+      }
+      else if(x+1 < 8){
+        if(board[y+2][x+1].piece === null || (isWhite ? board[y+2][x+1].piece.startsWith('black') : board[y+2][x+1].piece.startsWith('white'))) possibleMoves.push({x : x+1, y : y+2});
+      }
+      if(x-2 >= 0){
+        if(board[y+2][x-1].piece === null || (isWhite ? board[y+2][x-1].piece.startsWith('black') : board[y+2][x-1].piece.startsWith('white'))) possibleMoves.push({x : x-1, y : y+2});
+        if(board[y+1][x-2].piece === null || (isWhite ? board[y+1][x-2].piece.startsWith('black') : board[y+1][x-2].piece.startsWith('white'))) possibleMoves.push({x : x-2, y : y+1});
+      }
+      else if(x-1 >= 0){
+        if(board[y+2][x-1].piece === null || (isWhite ? board[y+2][x-1].piece.startsWith('black') : board[y+2][x-1].piece.startsWith('white'))) possibleMoves.push({x : x-1, y : y+2});
+      }
+    }
+    else if(y+1 < 8){
+      if(x+2 < 8){
+        if(board[y+1][x+2].piece === null || (isWhite ? board[y+1][x+2].piece.startsWith('black') : board[y+1][x+2].piece.startsWith('white'))) possibleMoves.push({x : x+2, y : y+1});
+      }
+      if(x-2 >= 0){
+        if(board[y+1][x-2].piece === null || (isWhite ? board[y+1][x-2].piece.startsWith('black') : board[y+1][x-2].piece.startsWith('white'))) possibleMoves.push({x : x-2, y : y+1});
+      }
+    }
+    if(y-2 >= 0){
+      if(x+2 < 8){
+        if(board[y-2][x+1].piece === null || (isWhite ? board[y-2][x+1].piece.startsWith('black') : board[y-2][x+1].piece.startsWith('white'))) possibleMoves.push({x : x+1, y : y-2});
+        if(board[y-1][x+2].piece === null || (isWhite ? board[y-1][x+2].piece.startsWith('black') : board[y-1][x+2].piece.startsWith('white'))) possibleMoves.push({x : x+2, y : y-1});
+      }
+      else if(x+1 < 8){
+        if(board[y-2][x+1].piece === null || (isWhite ? board[y-2][x+1].piece.startsWith('black') : board[y-2][x+1].piece.startsWith('white'))) possibleMoves.push({x : x+1, y : y-2});
+      }
+      if(x-2 >= 0){
+        if(board[y-2][x-1].piece === null || (isWhite ? board[y-2][x-1].piece.startsWith('black') : board[y-2][x-1].piece.startsWith('white'))) possibleMoves.push({x : x-1, y : y-2});
+        if(board[y-1][x-2].piece === null || (isWhite ? board[y-1][x-2].piece.startsWith('black') : board[y-1][x-2].piece.startsWith('white'))) possibleMoves.push({x : x-2, y : y-1});
+      }
+      else if(x-1 >= 0){
+        if(board[y-2][x-1].piece === null || (isWhite ? board[y-2][x-1].piece.startsWith('black') : board[y-2][x-1].piece.startsWith('white'))) possibleMoves.push({x : x-1, y : y-2});
+      }
+    }
+    else if(y-1 >= 0){
+      if(x-2 >= 0){
+        if(board[y-1][x-2].piece === null || (isWhite ? board[y-1][x-2].piece.startsWith('black') : board[y-1][x-2].piece.startsWith('white'))) possibleMoves.push({x : x-2, y : y-1});
+      }
+      if(x+2 < 8){
+        if(board[y-1][x+2].piece === null || (isWhite ? board[y-1][x+2].piece.startsWith('black') : board[y-1][x+2].piece.startsWith('white'))) possibleMoves.push({x : x+2, y : y-1});
       }
     }
     for(let move of possibleMoves){
