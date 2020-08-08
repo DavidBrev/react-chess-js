@@ -101,6 +101,18 @@ export default class App extends React.Component{
         case 'blackRook':
           if(!this.state.isWhiteTurn) this.rookPossibleMoves(tile.id, false);
           break;
+        case 'whiteBishop':
+          if(this.state.isWhiteTurn) this.bishopPossibleMoves(tile.id, true);
+          break;
+        case 'blackBishop':
+          if(!this.state.isWhiteTurn) this.bishopPossibleMoves(tile.id, false);
+          break;
+        case 'whiteQueen':
+          if(this.state.isWhiteTurn) this.queenPossibleMoves(tile.id, true);
+          break;
+        case 'blackQueen':
+          if(!this.state.isWhiteTurn) this.queenPossibleMoves(tile.id, false);
+          break;
         default:
           break;
       }
@@ -262,7 +274,7 @@ export default class App extends React.Component{
       focus: tileId
     });
   }
-  rookPossibleMoves(tileId, isWhite){
+  rookPossibleMoves(tileId, isWhite, returnData = false){
     let possibleMoves = [];
     let x = tileId.charCodeAt(1)-65;
     let y = 8-Number(tileId[0]);
@@ -270,7 +282,6 @@ export default class App extends React.Component{
     //up
     let pathEnded = false;
     for(let i=1; !pathEnded; i++){
-      console.log("test");
       if(y-i < 0){
         pathEnded = true;
       }
@@ -336,6 +347,110 @@ export default class App extends React.Component{
         possibleMoves.push({x : x+i, y : y});
       }
     }
+    if(returnData){
+      return possibleMoves;
+    }
+    else{
+      for(let move of possibleMoves){
+        board[move.y][move.x].activeState = true;
+      }
+      this.setState({
+        actualBoard: board,
+        focus: tileId
+      });
+    }
+  }
+  bishopPossibleMoves(tileId, isWhite, returnData = false){
+    let possibleMoves = [];
+    let x = tileId.charCodeAt(1)-65;
+    let y = 8-Number(tileId[0]);
+    let board = JSON.parse(JSON.stringify(this.state.actualBoard));
+    //right-up
+    let pathEnded = false;
+    for(let i=1; !pathEnded; i++){
+      if(y-i < 0 || x+i > 7){
+        pathEnded = true;
+      }
+      else if(board[y-i][x+i].piece !== null){
+        if(isWhite ? board[y-i][x+i].piece.startsWith('black') : board[y-i][x+i].piece.startsWith('white')){
+          possibleMoves.push({x : x+i, y : y-i});
+          pathEnded = true;
+        }
+        else pathEnded = true;
+      }
+      else{
+        possibleMoves.push({x : x+i, y : y-i});
+      }
+    }
+    //right-down
+    pathEnded = false;
+    for(let i=1; !pathEnded; i++){
+      if(y+i > 7 || x+i > 7){
+        pathEnded = true;
+      }
+      else if(board[y+i][x+i].piece !== null){
+        if(isWhite ? board[y+i][x+i].piece.startsWith('black') : board[y+i][x+i].piece.startsWith('white')){
+          possibleMoves.push({x : x+i, y : y+i});
+          pathEnded = true;
+        }
+        else pathEnded = true;
+      }
+      else{
+        possibleMoves.push({x : x+i, y : y+i});
+      }
+    }
+    //left-down
+    pathEnded = false;
+    for(let i=1; !pathEnded; i++){
+      if(y+i > 7 || x-i < 0){
+        pathEnded = true;
+      }
+      else if(board[y+i][x-i].piece !== null){
+        if(isWhite ? board[y+i][x-i].piece.startsWith('black') : board[y+i][x-i].piece.startsWith('white')){
+          possibleMoves.push({x : x-i, y : y+i});
+          pathEnded = true;
+        }
+        else pathEnded = true;
+      }
+      else{
+        possibleMoves.push({x : x-i, y : y+i});
+      }
+    }
+    //left-up
+    pathEnded = false;
+    for(let i=1; !pathEnded; i++){
+      if(y-i < 0 || x-i < 0){
+        pathEnded = true;
+      }
+      else if(board[y-i][x-i].piece !== null){
+        if(isWhite ? board[y-i][x-i].piece.startsWith('black') : board[y-i][x-i].piece.startsWith('white')){
+          possibleMoves.push({x : x-i, y : y-i});
+          pathEnded = true;
+        }
+        else pathEnded = true;
+      }
+      else{
+        possibleMoves.push({x : x-i, y : y-i});
+      }
+    }
+    if(returnData){
+      return possibleMoves;
+    }
+    else{
+      for(let move of possibleMoves){
+        board[move.y][move.x].activeState = true;
+      }
+      this.setState({
+        actualBoard: board,
+        focus: tileId
+      });
+    }
+  }
+  queenPossibleMoves(tileId, isWhite){
+    let board = JSON.parse(JSON.stringify(this.state.actualBoard));
+    let rookMoves = this.rookPossibleMoves(tileId, isWhite, true);
+    let bishopMoves = this.bishopPossibleMoves(tileId, isWhite, true);
+    let possibleMoves = [...rookMoves, ...bishopMoves];
     for(let move of possibleMoves){
       board[move.y][move.x].activeState = true;
     }
