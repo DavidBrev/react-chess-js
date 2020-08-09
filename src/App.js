@@ -113,6 +113,12 @@ export default class App extends React.Component{
         case 'blackQueen':
           if(!this.state.isWhiteTurn) this.queenPossibleMoves(tile.id, false);
           break;
+        case 'whiteKing':
+          if(this.state.isWhiteTurn) this.kingPossibleMoves(tile.id, true);
+          break;
+        case 'blackKing':
+          if(!this.state.isWhiteTurn) this.kingPossibleMoves(tile.id, false);
+          break;
         default:
           break;
       }
@@ -451,6 +457,46 @@ export default class App extends React.Component{
     let rookMoves = this.rookPossibleMoves(tileId, isWhite, true);
     let bishopMoves = this.bishopPossibleMoves(tileId, isWhite, true);
     let possibleMoves = [...rookMoves, ...bishopMoves];
+    for(let move of possibleMoves){
+      board[move.y][move.x].activeState = true;
+    }
+    this.setState({
+      actualBoard: board,
+      focus: tileId
+    });
+  }
+  //The method below is meant to be reworked
+  kingPossibleMoves(tileId, isWhite){
+    let possibleMoves = [];
+    let x = tileId.charCodeAt(1)-65;
+    let y = 8-Number(tileId[0]);
+    let board = JSON.parse(JSON.stringify(this.state.actualBoard));
+    if(y-1 >= 0){
+      if(board[y-1][x].piece === null || (isWhite ? board[y-1][x].piece.startsWith('black') : board[y-1][x].piece.startsWith('white'))) possibleMoves.push({x : x, y : y-1});
+      if(x+1 < 8){
+        if(board[y-1][x+1].piece === null || (isWhite ? board[y-1][x+1].piece.startsWith('black') : board[y-1][x+1].piece.startsWith('white'))) possibleMoves.push({x : x+1, y : y-1});
+      }
+      if(x-1 >= 0){
+        if(board[y-1][x-1].piece === null || (isWhite ? board[y-1][x-1].piece.startsWith('black') : board[y-1][x-1].piece.startsWith('white'))) possibleMoves.push({x : x-1, y : y-1});
+      }
+    }
+    if(y+1 < 8){
+      if(board[y+1][x].piece === null || (isWhite ? board[y+1][x].piece.startsWith('black') : board[y+1][x].piece.startsWith('white'))) possibleMoves.push({x : x, y : y+1});
+      if(x+1 < 8){
+        if(board[y+1][x+1].piece === null || (isWhite ? board[y+1][x+1].piece.startsWith('black') : board[y+1][x+1].piece.startsWith('white'))) possibleMoves.push({x : x+1, y : y+1});
+      }
+      if(x-1 >= 0){
+        if(board[y+1][x-1].piece === null || (isWhite ? board[y+1][x-1].piece.startsWith('black') : board[y+1][x-1].piece.startsWith('white'))) possibleMoves.push({x : x-1, y : y+1});
+      }
+    }
+    //By checking the 2 conditions below on their own
+    //I am sure their content is not added twice in possibleMoves
+    if(x+1 < 8){
+      if(board[y][x+1].piece === null || (isWhite ? board[y][x+1].piece.startsWith('black') : board[y][x+1].piece.startsWith('white'))) possibleMoves.push({x : x+1, y : y});
+    }
+    if(x-1 >= 0){
+      if(board[y][x-1].piece === null || (isWhite ? board[y][x-1].piece.startsWith('black') : board[y][x-1].piece.startsWith('white'))) possibleMoves.push({x : x-1, y : y});
+    }
     for(let move of possibleMoves){
       board[move.y][move.x].activeState = true;
     }
