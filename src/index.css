@@ -134,3 +134,31 @@ table{
   justify-content: center;
   align-items: center;
 }
+.turnButton{
+  border: 0;
+  font-family: Trebuchet MS,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Tahoma,sans-serif;
+  padding: 10px 10px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  margin-left: 10px;
+  border-radius: 6px;
+}
+.whiteButton{
+  background-color: #eeeeee;
+}
+.blackButton{
+  background-color: #111111;
+}
+.alignHorizontal{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+}
+.adjustGameWidth{
+  width: 600px;
+  margin-left : auto;
+  margin-right: auto;
+  margin-top: 10px;
+  margin-bottom: 10^px;
+}

@@ -508,7 +508,7 @@ export default class App extends React.Component{
   render(){
     return(
       <div>
-        <Menu onGenerateNewBoard={this.generateNewBoardHandler} />
+        <Menu onGenerateNewBoard={this.generateNewBoardHandler} isWhiteTurn={this.state.isWhiteTurn} />
         <div className="gameDisplay">
           <PiecesTaken pieces={this.state.whiteTaken} isWhite={true} />
           <Board actualBoard={this.state.actualBoard} onTileClick={this.clickTileHandler} focus={this.state.focus} />

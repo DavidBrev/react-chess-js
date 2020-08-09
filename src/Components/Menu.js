@@ -1,15 +1,19 @@
 import React from 'react';
 
 export default class Menu extends React.Component{
+  renderButton(){
+    if(this.props.isWhiteTurn === null)
+      return <span>No game currently in progress.</span>;
+    else
+      return <button className={`turnButton ${this.props.isWhiteTurn ? 'whiteButton' : 'blackButton'}`} ></button>;
+  }
   render(){
     return(
-      <div>
+      <div className='alignHorizontal adjustGameWidth'>
         <button onClick={this.props.onGenerateNewBoard}>New game</button>
-        <button>Save game</button>
-        <button>Load game</button>
-        <div>
-          <button>Previous Move</button>
-          <button>Next Move</button>
+        <div className='alignHorizontal'>
+          <span>Turn : </span>
+          {this.renderButton()}
         </div>
       </div>
     )
