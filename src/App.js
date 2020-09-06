@@ -75,11 +75,11 @@ export default class App extends React.Component{
       actualBoard : board,
       focus: null,
       whiteTaken : [],
-      blackTaken : []
+      blackTaken : [],
+      possibleEnPassant : {x:null, y:null}
     });
   }
   clickTileHandler(tile){
-    console.log(tile);
     if(this.state.focus === null){
       if(tile.piece === null) return;
       switch(tile.piece){
@@ -164,8 +164,17 @@ export default class App extends React.Component{
           if(taken !== null){
             if(taken.startsWith('white')) wT.push(taken);
             else bT.push(taken);
-
           }
+        }
+        if(p.endsWith("Pawn") && focusX === x && (focusY+2 === y || focusY-2 === y)){
+          this.setState({
+            possibleEnPassant : {x : x, y : y}
+          });
+        }
+        else{
+          this.setState({
+            possibleEnPassant : {x : null, y : null}
+          });
         }
         if(t !== null){
           if(t.startsWith('white')) wT.push(t);
@@ -191,7 +200,7 @@ export default class App extends React.Component{
   //returnData is not false or true in this case:
   // 0 is false
   // 1 is true
-  // 2 will return the four tiles that the pawn threatens if they exist
+  // 2 will return the two tiles that the pawn threatens if they exist
   pawnPossibleMoves(tileId, isWhite, returnData = 0){
     let possibleMoves = [];
     let x = tileId.charCodeAt(1)-65;
@@ -203,11 +212,9 @@ export default class App extends React.Component{
         if(y-1 >= 0){
           if(x-1 >= 0){
             possibleTake.push({x : x-1, y: y-1});
-            possibleTake.push({x : x-1, y: y});
           }
           if(x+1 <= 7){
             possibleTake.push({x : x+1, y: y-1});
-            possibleTake.push({x : x+1, y: y});
           }
         }
       }
@@ -215,11 +222,9 @@ export default class App extends React.Component{
         if(y+1 <= 7){
           if(x-1 >= 0){
             possibleTake.push({x : x-1, y: y+1});
-            possibleTake.push({x : x-1, y: y});
           }
           if(x+1 <= 7){
             possibleTake.push({x : x+1, y: y+1});
-            possibleTake.push({x : x+1, y: y});
           }
         }
       }
@@ -232,18 +237,18 @@ export default class App extends React.Component{
           if(board[y-2][x].piece === null)
             possibleMoves.push({x : x, y: y-2});
         }
-        if(x+1 <= 7 && ((board[y-1][x+1].piece !== null && board[y-1][x+1].piece.startsWith('black')) || (board[y][x+1].piece !== null && board[y][x+1].piece.startsWith('black'))))
+        if(x+1 <= 7 && (board[y-1][x+1].piece !== null && board[y-1][x+1].piece.startsWith('black')))
           possibleMoves.push({x : x+1, y: y-1});
-        if(x-1 >= 0 && ((board[y-1][x-1].piece !== null && board[y-1][x-1].piece.startsWith('black')) || (board[y][x-1].piece !== null && board[y][x-1].piece.startsWith('black'))))
+        if(x-1 >= 0 && (board[y-1][x-1].piece !== null && board[y-1][x-1].piece.startsWith('black')))
           possibleMoves.push({x : x-1, y: y-1});
       }
       else{
         if(y-1 >= 0){
           if(board[y-1][x].piece === null)
             possibleMoves.push({x : x, y: y-1});
-          if(x+1 <= 7 && ((board[y-1][x+1].piece !== null && board[y-1][x+1].piece.startsWith('black')) || (board[y][x+1].piece !== null && board[y][x+1].piece.startsWith('black'))))
+          if(x+1 <= 7 && ((board[y-1][x+1].piece !== null && board[y-1][x+1].piece.startsWith('black')) || (board[y][x+1].piece !== null && board[y][x+1].piece.startsWith('black') && y === this.state.possibleEnPassant.y && x+1 === this.state.possibleEnPassant.x)))
             possibleMoves.push({x : x+1, y: y-1});
-          if(x-1 >= 0 && ((board[y-1][x-1].piece !== null && board[y-1][x-1].piece.startsWith('black')) || (board[y][x-1].piece !== null && board[y][x-1].piece.startsWith('black'))))
+          if(x-1 >= 0 && ((board[y-1][x-1].piece !== null && board[y-1][x-1].piece.startsWith('black')) || (board[y][x-1].piece !== null && board[y][x-1].piece.startsWith('black') && y === this.state.possibleEnPassant.y && x-1 === this.state.possibleEnPassant.x)))
             possibleMoves.push({x : x-1, y: y-1});
         }
       }
@@ -255,9 +260,9 @@ export default class App extends React.Component{
           if(board[y+2][x].piece === null)
             possibleMoves.push({x : x, y: y+2});
         }
-        if(x+1 <= 7 && ((board[y+1][x+1].piece !== null && board[y+1][x+1].piece.startsWith('white')) || (board[y][x+1].piece !== null && board[y][x+1].piece.startsWith('white'))))
+        if(x+1 <= 7 && (board[y+1][x+1].piece !== null && board[y+1][x+1].piece.startsWith('white')))
           possibleMoves.push({x : x+1, y: y+1});
-        if(x-1 >= 0 && ((board[y+1][x-1].piece !== null && board[y+1][x-1].piece.startsWith('white')) || (board[y][x-1].piece !== null && board[y][x-1].piece.startsWith('white'))))
+        if(x-1 >= 0 && (board[y+1][x-1].piece !== null && board[y+1][x-1].piece.startsWith('white')))
           possibleMoves.push({x : x-1, y: y+1});
       }
       else{
@@ -266,9 +271,9 @@ export default class App extends React.Component{
         if(y+1 <= 7){
           if(board[y+1][x].piece === null)
             possibleMoves.push({x : x, y: y+1});
-          if(x+1 <= 7 && ((board[y+1][x+1].piece !== null && board[y+1][x+1].piece.startsWith('white')) || (board[y][x+1].piece !== null && board[y][x+1].piece.startsWith('white'))))
+          if(x+1 <= 7 && ((board[y+1][x+1].piece !== null && board[y+1][x+1].piece.startsWith('white')) || (board[y][x+1].piece !== null && board[y][x+1].piece.startsWith('white') && y === this.state.possibleEnPassant.y && x+1 === this.state.possibleEnPassant.x)))
             possibleMoves.push({x : x+1, y: y+1});
-          if(x-1 >= 0 && ((board[y+1][x-1].piece !== null && board[y+1][x-1].piece.startsWith('white')) || (board[y][x-1].piece !== null && board[y][x-1].piece.startsWith('white'))))
+          if(x-1 >= 0 && ((board[y+1][x-1].piece !== null && board[y+1][x-1].piece.startsWith('white')) || (board[y][x-1].piece !== null && board[y][x-1].piece.startsWith('white') && y === this.state.possibleEnPassant.y && x-1 === this.state.possibleEnPassant.x)))
             possibleMoves.push({x : x-1, y: y+1});
         }
       }
