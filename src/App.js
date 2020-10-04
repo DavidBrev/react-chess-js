@@ -2,6 +2,7 @@ import React from 'react';
 import Menu from './Components/Menu';
 import Board from './Components/Board';
 import PiecesTaken from './Components/PiecesTaken';
+import removeFromArray from './utilities/removeFromArray';
 
 export default class App extends React.Component{
   constructor(props){
@@ -141,68 +142,77 @@ export default class App extends React.Component{
         })
       }
       else if(tile.activeState){
-        let wT = this.state.whiteTaken.slice();
-        let bT = this.state.blackTaken.slice();
-        let x = tile.id.charCodeAt(1)-65;
-        let y = 8-Number(tile.id[0]);
-        let focusX = this.state.focus.charCodeAt(1)-65;
-        let focusY = 8-Number(this.state.focus[0]);
-        let p = board[focusY][focusX].piece;
-        let t = board[y][x].piece;
-        if(p.endsWith("Pawn") && (
-          (focusX-1 === x && focusY-1 === y) ||
-          (focusX-1 === x && focusY+1 === y) ||
-          (focusX+1 === x && focusY-1 === y) ||
-          (focusX+1 === x && focusY+1 === y)
-        ) && t === null){
-          let taken;
-          if(focusX-1 === x){
-            taken = board[focusY][focusX-1].piece;
-            board[focusY][focusX-1].piece = null;
-          }
-          else if(focusX+1 === x){
-            taken = board[focusY][focusX+1].piece;
-            board[focusY][focusX+1].piece = null;
-          }
-          //Should always be true; better safe than sorry
-          if(taken !== null){
-            if(taken.startsWith('white')) wT.push(taken);
-            else bT.push(taken);
-          }
-        }
-        if(p.endsWith("Pawn") && focusX === x && (focusY+2 === y || focusY-2 === y)){
-          this.setState({
-            possibleEnPassant : {x : x, y : y}
-          });
-        }
-        else{
-          this.setState({
-            possibleEnPassant : {x : null, y : null}
-          });
-        }
-        if(t !== null){
-          if(t.startsWith('white')) wT.push(t);
-          else bT.push(t);
-        }
-        board[focusY][focusX].piece = null;
-        board[y][x].piece = p;
-        for(let row of board){
-          for(let tile of row){
-            tile.activeState = false;
-          }
-        }
-        let whiteState = this.isKingThreatened(board, true);
-        let blackState = this.isKingThreatened(board, false);
-        this.setState({
-          actualBoard: board,
-          focus : null,
-          whiteTaken : wT,
-          blackTaken : bT,
-          isWhiteTurn : !this.state.isWhiteTurn,
-          whiteState : whiteState ? 'Check' : 'Safe',
-          blackState : blackState ? 'Check' : 'Safe'
-        })
+        this.generateNextBoard(tile, board);
       }
+    }
+  }
+
+  generateNextBoard(tile, board = JSON.parse(JSON.stringify(this.state.actualBoard)), returnBoard = false, focusData = {x: this.state.focus.charCodeAt(1)-65, y: 8-Number(this.state.focus[0])}){
+    let wT = this.state.whiteTaken.slice();
+    let bT = this.state.blackTaken.slice();
+    let x = tile.id.charCodeAt(1)-65;
+    let y = 8-Number(tile.id[0]);
+    let focusX = focusData.x;
+    let focusY = focusData.y;
+    let p = board[focusY][focusX].piece;
+    let t = board[y][x].piece;
+    if(p.endsWith("Pawn") && (
+      (focusX-1 === x && focusY-1 === y) ||
+      (focusX-1 === x && focusY+1 === y) ||
+      (focusX+1 === x && focusY-1 === y) ||
+      (focusX+1 === x && focusY+1 === y)
+    ) && t === null){
+      let taken;
+      if(focusX-1 === x){
+        taken = board[focusY][focusX-1].piece;
+        board[focusY][focusX-1].piece = null;
+      }
+      else if(focusX+1 === x){
+        taken = board[focusY][focusX+1].piece;
+        board[focusY][focusX+1].piece = null;
+      }
+      //Should always be true; better safe than sorry
+      if(taken !== null){
+        if(taken.startsWith('white')) wT.push(taken);
+        else bT.push(taken);
+      }
+    }
+    if(p.endsWith("Pawn") && focusX === x && (focusY+2 === y || focusY-2 === y)){
+      this.setState({
+        possibleEnPassant : {x : x, y : y}
+      });
+    }
+    else{
+      this.setState({
+        possibleEnPassant : {x : null, y : null}
+      });
+    }
+    if(t !== null){
+      if(t.startsWith('white')) wT.push(t);
+      else bT.push(t);
+    }
+    board[focusY][focusX].piece = null;
+    board[y][x].piece = p;
+    for(let row of board){
+      for(let tile of row){
+        tile.activeState = false;
+      }
+    }
+    let whiteState = this.isKingThreatened(board, true);
+    let blackState = this.isKingThreatened(board, false);
+    if(!returnBoard){
+      this.setState({
+        actualBoard: board,
+        focus : null,
+        whiteTaken : wT,
+        blackTaken : bT,
+        isWhiteTurn : !this.state.isWhiteTurn,
+        whiteState : whiteState ? 'Check' : 'Safe',
+        blackState : blackState ? 'Check' : 'Safe'
+      })
+    }
+    else{
+      return board;
     }
   }
   //returnData is not false or true in this case:
@@ -286,6 +296,7 @@ export default class App extends React.Component{
       }
     }
     if(returnData === 0){
+      possibleMoves = this.removeCheckMateMoves(possibleMoves, {x: x, y: y}, isWhite, board);
       for(let move of possibleMoves){
         board[move.y][move.x].activeState = true;
       }
@@ -352,6 +363,7 @@ export default class App extends React.Component{
     if(returnData)
       return possibleMoves;
     else{
+      possibleMoves = this.removeCheckMateMoves(possibleMoves, {x: x, y: y}, isWhite, board);
       for(let move of possibleMoves){
         board[move.y][move.x].activeState = true;
       }
@@ -437,6 +449,7 @@ export default class App extends React.Component{
       return possibleMoves;
     }
     else{
+      possibleMoves = this.removeCheckMateMoves(possibleMoves, {x: x, y: y}, isWhite, board);
       for(let move of possibleMoves){
         board[move.y][move.x].activeState = true;
       }
@@ -522,6 +535,7 @@ export default class App extends React.Component{
       return possibleMoves;
     }
     else{
+      possibleMoves = this.removeCheckMateMoves(possibleMoves, {x: x, y: y}, isWhite, board);
       for(let move of possibleMoves){
         board[move.y][move.x].activeState = true;
       }
@@ -532,6 +546,8 @@ export default class App extends React.Component{
     }
   }
   queenPossibleMoves(tileId, isWhite, returnData = false, board = JSON.parse(JSON.stringify(this.state.actualBoard))){
+    let x = tileId.charCodeAt(1)-65;
+    let y = 8-Number(tileId[0]);
     let rookMoves = this.rookPossibleMoves(tileId, isWhite, true);
     let bishopMoves = this.bishopPossibleMoves(tileId, isWhite, true);
     let possibleMoves = [...rookMoves, ...bishopMoves];
@@ -539,6 +555,7 @@ export default class App extends React.Component{
       return possibleMoves;
     }
     else{
+      possibleMoves = this.removeCheckMateMoves(possibleMoves, {x: x, y: y}, isWhite, board);
       for(let move of possibleMoves){
         board[move.y][move.x].activeState = true;
       }
@@ -584,6 +601,7 @@ export default class App extends React.Component{
       return possibleMoves;
     }
     else{
+      possibleMoves = this.removeCheckMateMoves(possibleMoves, {x: x, y: y}, isWhite, board);
       for(let move of possibleMoves){
         board[move.y][move.x].activeState = true;
       }
@@ -608,35 +626,35 @@ export default class App extends React.Component{
     if(kingCoords !== null){
       let tileId = `${8-kingCoords.y}${String.fromCharCode(65+kingCoords.x)}`;
       //rookAndQueenCheck
-      let rookAndQueenCheck = this.rookPossibleMoves(tileId, checkForWhite ? true : false, true, boardToCheck);
+      let rookAndQueenCheck = this.rookPossibleMoves(tileId, checkForWhite ? true : false, true, JSON.parse(JSON.stringify(boardToCheck)));
       for(let move of rookAndQueenCheck){
         if(boardToCheck[move.y][move.x].piece === (checkForWhite ? 'blackRook' : 'whiteRook') || boardToCheck[move.y][move.x].piece === (checkForWhite ? 'blackQueen' : 'whiteQueen')){
           return true;
         }
       }
       //bishopAndQueenCheck
-      let bishopAndQueenCheck = this.bishopPossibleMoves(tileId, checkForWhite ? true : false, true, boardToCheck);
+      let bishopAndQueenCheck = this.bishopPossibleMoves(tileId, checkForWhite ? true : false, true, JSON.parse(JSON.stringify(boardToCheck)));
       for(let move of bishopAndQueenCheck){
         if(boardToCheck[move.y][move.x].piece === (checkForWhite ? 'blackBishop' : 'whiteBishop') || boardToCheck[move.y][move.x].piece === (checkForWhite ? 'blackQueen' : 'whiteQueen')){
           return true;
         }
       }
       //knightCheck
-      let knightCheck = this.knightPossibleMoves(tileId, checkForWhite ? true : false, true, boardToCheck);
+      let knightCheck = this.knightPossibleMoves(tileId, checkForWhite ? true : false, true, JSON.parse(JSON.stringify(boardToCheck)));
       for(let move of knightCheck){
         if(boardToCheck[move.y][move.x].piece === (checkForWhite ? 'blackKnight' : 'whiteKnight')){
           return true;
         }
       }
       //kingCheck
-      let kingCheck = this.kingPossibleMoves(tileId, checkForWhite ? true : false, true, boardToCheck);
+      let kingCheck = this.kingPossibleMoves(tileId, checkForWhite ? true : false, true, JSON.parse(JSON.stringify(boardToCheck)));
       for(let move of kingCheck){
         if(boardToCheck[move.y][move.x].piece === (checkForWhite ? 'blackKing' : 'whiteKing')){
           return true;
         }
       }
       //pawnCheck
-      let pawnCheck = this.pawnPossibleMoves(tileId, checkForWhite ? true : false, 2, boardToCheck);
+      let pawnCheck = this.pawnPossibleMoves(tileId, checkForWhite ? true : false, 2, JSON.parse(JSON.stringify(boardToCheck)));
       for(let move of pawnCheck){
         if(boardToCheck[move.y][move.x].piece === (checkForWhite ? 'blackPawn' : 'whitePawn')){
           return true;
@@ -647,6 +665,20 @@ export default class App extends React.Component{
     else{
       return -1;
     }
+  }
+  removeCheckMateMoves(possibleMoves, focusData, isWhite, board){
+    let elementsToRemove = [];
+    for(let move of possibleMoves){
+      let fakeTile = board[move.y][move.x];
+      let virtualBoard = this.generateNextBoard(fakeTile, JSON.parse(JSON.stringify(board)), true, focusData);
+      if(this.isKingThreatened(virtualBoard, isWhite)){
+        elementsToRemove.push(move);
+      }
+    }
+    for(let element of elementsToRemove){
+      possibleMoves = removeFromArray(possibleMoves, element);
+    }
+    return possibleMoves;
   }
   render(){
     return(
