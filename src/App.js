@@ -2,6 +2,7 @@ import React from 'react';
 import Menu from './Components/Menu';
 import Board from './Components/Board';
 import PiecesTaken from './Components/PiecesTaken';
+import SelectReplacement from './Components/SelectReplacement';
 import removeFromArray from './utilities/removeFromArray';
 
 export default class App extends React.Component{
@@ -9,6 +10,7 @@ export default class App extends React.Component{
     super(props);
     this.generateNewBoardHandler = this.generateNewBoardHandler.bind(this);
     this.clickTileHandler = this.clickTileHandler.bind(this);
+    this.clickPromotionHandler = this.clickPromotionHandler.bind(this);
     let board = [];
     for(let i=0; i<8; i++){
       let row = [];
@@ -30,7 +32,8 @@ export default class App extends React.Component{
       isWhiteTurn : null,
       focus : null,
       whiteState : null,
-      blackState : null
+      blackState : null,
+      promotionInProgress : false
     }
   }
   generateNewBoardHandler(){
@@ -85,6 +88,7 @@ export default class App extends React.Component{
     });
   }
   clickTileHandler(tile){
+    if(this.state.promotionInProgress) return;
     if(this.state.focus === null){
       if(tile.piece === null) return;
       switch(tile.piece){
@@ -146,7 +150,22 @@ export default class App extends React.Component{
       }
     }
   }
-
+  clickPromotionHandler(promotion){
+    let board = JSON.parse(JSON.stringify(this.state.actualBoard));
+    let focusX = this.state.focus.charCodeAt(1)-65;
+    let focusY = 8-Number(this.state.focus[0]);
+    board[focusY][focusX].piece = promotion;
+    let whiteState = this.isKingThreatened(board, true);
+    let blackState = this.isKingThreatened(board, false);
+    this.setState({
+      actualBoard: board,
+      focus : null,
+      isWhiteTurn : !this.state.isWhiteTurn,
+      whiteState : whiteState ? 'Check' : 'Safe',
+      blackState : blackState ? 'Check' : 'Safe',
+      promotionInProgress : false
+    });
+  }
   generateNextBoard(tile, board = JSON.parse(JSON.stringify(this.state.actualBoard)), returnBoard = false, focusData = {x: this.state.focus.charCodeAt(1)-65, y: 8-Number(this.state.focus[0])}){
     let wT = this.state.whiteTaken.slice();
     let bT = this.state.blackTaken.slice();
@@ -201,15 +220,28 @@ export default class App extends React.Component{
     let whiteState = this.isKingThreatened(board, true);
     let blackState = this.isKingThreatened(board, false);
     if(!returnBoard){
-      this.setState({
-        actualBoard: board,
-        focus : null,
-        whiteTaken : wT,
-        blackTaken : bT,
-        isWhiteTurn : !this.state.isWhiteTurn,
-        whiteState : whiteState ? 'Check' : 'Safe',
-        blackState : blackState ? 'Check' : 'Safe'
-      })
+      if(p.endsWith("Pawn") && (p.startsWith('white') ? y === 0 : y === 7)){
+        this.setState({
+          actualBoard: board,
+          focus : tile.id,
+          whiteTaken : wT,
+          blackTaken : bT,
+          whiteState : whiteState ? 'Check' : 'Safe',
+          blackState : blackState ? 'Check' : 'Safe',
+          promotionInProgress : true
+        });
+      }
+      else{
+        this.setState({
+          actualBoard: board,
+          focus : null,
+          whiteTaken : wT,
+          blackTaken : bT,
+          isWhiteTurn : !this.state.isWhiteTurn,
+          whiteState : whiteState ? 'Check' : 'Safe',
+          blackState : blackState ? 'Check' : 'Safe'
+        });
+      }
     }
     else{
       return board;
@@ -689,6 +721,7 @@ export default class App extends React.Component{
           <Board actualBoard={this.state.actualBoard} onTileClick={this.clickTileHandler} focus={this.state.focus} />
           <PiecesTaken pieces={this.state.blackTaken} isWhite={false} />
         </div>
+        <SelectReplacement onPromoteClick={this.clickPromotionHandler} selection={this.state.promotionInProgress} colorSelect={this.state.isWhiteTurn} />
       </div>
     );
   }
