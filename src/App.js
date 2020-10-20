@@ -33,7 +33,15 @@ export default class App extends React.Component{
       focus : null,
       whiteState : null,
       blackState : null,
-      promotionInProgress : false
+      promotionInProgress : false,
+      castleData : {
+        whiteKingHasMoved : null,
+        whiteRookHasMovedLeft : null,
+        whiteRookHasMovedRight : null,
+        blackKingHasMoved : null,
+        blackRookHasMovedLeft : null,
+        blackRookHasMovedRight : null
+      }
     }
   }
   generateNewBoardHandler(){
@@ -84,7 +92,15 @@ export default class App extends React.Component{
       focus: null,
       whiteTaken : [],
       blackTaken : [],
-      possibleEnPassant : {x:null, y:null}
+      possibleEnPassant : {x:null, y:null},
+      castleData : {
+        whiteKingHasMoved : false,
+        whiteRookHasMovedLeft : false,
+        whiteRookHasMovedRight : false,
+        blackKingHasMoved : false,
+        blackRookHasMovedLeft : false,
+        blackRookHasMovedRight : false
+      }
     });
   }
   clickTileHandler(tile){
@@ -175,6 +191,7 @@ export default class App extends React.Component{
     let focusY = focusData.y;
     let p = board[focusY][focusX].piece;
     let t = board[y][x].piece;
+    let castleDetected = 0;
     if(p.endsWith("Pawn") && (
       (focusX-1 === x && focusY-1 === y) ||
       (focusX-1 === x && focusY+1 === y) ||
@@ -210,6 +227,16 @@ export default class App extends React.Component{
       if(t.startsWith('white')) wT.push(t);
       else bT.push(t);
     }
+    if(p.endsWith('King') && focusX + 2 === x){
+      castleDetected = 2;
+      board[focusY][focusX+3].piece = null;
+      board[y][x-1].piece = `${p.startsWith('white') ? 'white' : 'black'}Rook`;
+    }
+    else if(p.endsWith('King') && focusX - 2 === x){
+      castleDetected = 1;
+      board[focusY][focusX-4].piece = null;
+      board[y][x+1].piece = `${p.startsWith('white') ? 'white' : 'black'}Rook`;
+    }
     board[focusY][focusX].piece = null;
     board[y][x].piece = p;
     for(let row of board){
@@ -232,6 +259,27 @@ export default class App extends React.Component{
         });
       }
       else{
+        let isWhite = p.startsWith('white') ? 'white' : 'black';
+        let castleData = JSON.parse(JSON.stringify(this.state.castleData));
+        if(castleDetected === 0){
+          if(p.endsWith("King") && !castleData[`${isWhite}KingHasMoved`]){
+            castleData[`${isWhite}KingHasMoved`] = true;
+          }
+          else if(p.endsWith("Rook") && !castleData[`${isWhite}RookHasMovedLeft`] && focusX === 0 && (p.startsWith('white') ? focusY === 7 : focusY === 0)){
+            castleData[`${isWhite}RookHasMovedLeft`] = true;
+          }
+          else if(p.endsWith("Rook") && !castleData[`${isWhite}RookHasMovedRight`] && focusX === 7 && (p.startsWith('white') ? focusY === 7 : focusY === 0)){
+            castleData[`${isWhite}RookHasMovedRight`] = true;
+          }
+        }
+        else if(castleDetected === 1){
+          castleData[`${isWhite}KingHasMoved`] = true;
+          castleData[`${isWhite}RookHasMovedLeft`] = true;
+        }
+        else if(castleDetected === 2){
+          castleData[`${isWhite}KingHasMoved`] = true;
+          castleData[`${isWhite}RookHasMovedRight`] = true;
+        }
         this.setState({
           actualBoard: board,
           focus : null,
@@ -239,7 +287,8 @@ export default class App extends React.Component{
           blackTaken : bT,
           isWhiteTurn : !this.state.isWhiteTurn,
           whiteState : whiteState ? 'Check' : 'Safe',
-          blackState : blackState ? 'Check' : 'Safe'
+          blackState : blackState ? 'Check' : 'Safe',
+          castleData : castleData
         });
       }
     }
@@ -622,18 +671,49 @@ export default class App extends React.Component{
     }
     //By checking the 2 conditions below on their own
     //I am sure their content is not added twice in possibleMoves
+    //I also store the values after placing them into the array
+    //Alloying me to use them to check if the castle move is possible later on
+    let kingLeft = null;
+    let kingRight = null;
     if(x+1 < 8){
-      if(board[y][x+1].piece === null || (isWhite ? board[y][x+1].piece.startsWith('black') : board[y][x+1].piece.startsWith('white'))) possibleMoves.push({x : x+1, y : y});
+      if(board[y][x+1].piece === null || (isWhite ? board[y][x+1].piece.startsWith('black') : board[y][x+1].piece.startsWith('white'))){
+        possibleMoves.push({x : x+1, y : y});
+        kingRight = possibleMoves[possibleMoves.length-1];
+      }
     }
     if(x-1 >= 0){
-      if(board[y][x-1].piece === null || (isWhite ? board[y][x-1].piece.startsWith('black') : board[y][x-1].piece.startsWith('white'))) possibleMoves.push({x : x-1, y : y});
+      if(board[y][x-1].piece === null || (isWhite ? board[y][x-1].piece.startsWith('black') : board[y][x-1].piece.startsWith('white'))) {
+        possibleMoves.push({x : x-1, y : y});
+        kingLeft = possibleMoves[possibleMoves.length-1];
+      }
     }
 
     if(returnData){
       return possibleMoves;
     }
     else{
+      let castleLeft = null;
+      let castleRight = null;
+      if(isWhite ? this.state.whiteState !== 'Check' && !this.state.castleData['whiteKingHasMoved'] && !this.state.castleData['whiteRookHasMovedLeft'] : this.state.blackState !== 'Check' && !this.state.castleData['blackKingHasMoved']  && !this.state.castleData['blackRookHasMovedLeft']){
+        if(board[y][x-1].piece === null && board[y][x-2].piece === null && board[y][x-3].piece === null){
+          possibleMoves.push({x : x-2, y : y});
+          castleLeft = possibleMoves[possibleMoves.length-1];
+        }
+      }
+      if(isWhite ? this.state.whiteState !== 'Check' && !this.state.castleData['whiteKingHasMoved'] && !this.state.castleData['whiteRookHasMovedRight'] : this.state.whiteState !== 'Check' && !this.state.castleData['blackKingHasMoved']  && !this.state.castleData['blackRookHasMovedRight']){
+        if(board[y][x+1].piece === null && board[y][x+2].piece === null){
+          possibleMoves.push({x : x+2, y : y});
+          castleRight = possibleMoves[possibleMoves.length-1];
+        }
+      }
       possibleMoves = this.removeCheckMateMoves(possibleMoves, {x: x, y: y}, isWhite, board);
+      if(possibleMoves.includes(castleRight) && !possibleMoves.includes(kingRight)){
+        console.log("called");
+        possibleMoves = removeFromArray(possibleMoves, castleRight);
+      }
+      if(possibleMoves.includes(castleLeft) && !possibleMoves.includes(kingLeft)){
+        possibleMoves = removeFromArray(possibleMoves, castleRight);
+      }
       for(let move of possibleMoves){
         board[move.y][move.x].activeState = true;
       }
