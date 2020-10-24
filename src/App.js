@@ -180,6 +180,10 @@ export default class App extends React.Component{
       whiteState : whiteState ? 'Check' : 'Safe',
       blackState : blackState ? 'Check' : 'Safe',
       promotionInProgress : false
+    }, () => {
+      if(this.isCheckMate(this.state.isWhiteTurn)){
+        console.log(`${this.state.isWhiteTurn ? 'Black' : 'White'} wins !`);
+      }
     });
   }
   generateNextBoard(tile, board = JSON.parse(JSON.stringify(this.state.actualBoard)), returnBoard = false, focusData = {x: this.state.focus.charCodeAt(1)-65, y: 8-Number(this.state.focus[0])}){
@@ -289,6 +293,10 @@ export default class App extends React.Component{
           whiteState : whiteState ? 'Check' : 'Safe',
           blackState : blackState ? 'Check' : 'Safe',
           castleData : castleData
+        }, () => {
+          if(this.isCheckMate(this.state.isWhiteTurn)){
+            console.log(`${this.state.isWhiteTurn ? 'Black' : 'White'} wins !`);
+          }
         });
       }
     }
@@ -776,6 +784,57 @@ export default class App extends React.Component{
     }
     else{
       return -1;
+    }
+  }
+  isCheckMate(checkForWhite){
+    if((checkForWhite ? this.state.whiteState : this.state.blackState) === 'Check'){
+      let board = JSON.parse(JSON.stringify(this.state.actualBoard));
+      let scanStatus = true;
+      let totalMoves = [];
+      for(let row of board){
+        for(let tile of row){
+          if(tile.piece !== null && (checkForWhite ? tile.piece.startsWith('white') : tile.piece.startsWith('black'))){
+            let possibleMoves;
+            let x = tile.id.charCodeAt(1)-65;
+            let y = 8-Number(tile.id[0]);
+            if(tile.piece.endsWith('Pawn')){
+              possibleMoves = this.pawnPossibleMoves(tile.id, checkForWhite, 2, JSON.parse(JSON.stringify(board)));
+            }
+            else if(tile.piece.endsWith('Rook')){
+              possibleMoves = this.rookPossibleMoves(tile.id, checkForWhite, true, JSON.parse(JSON.stringify(board)));
+            }
+            else if(tile.piece.endsWith('Knight')){
+              possibleMoves = this.knightPossibleMoves(tile.id, checkForWhite, true, JSON.parse(JSON.stringify(board)));
+            }
+            else if(tile.piece.endsWith('Bishop')){
+              possibleMoves = this.bishopPossibleMoves(tile.id, checkForWhite, true, JSON.parse(JSON.stringify(board)));
+            }
+            else if(tile.piece.endsWith('Queen')){
+              possibleMoves = this.queenPossibleMoves(tile.id, checkForWhite, true, JSON.parse(JSON.stringify(board)));
+            }
+            else if(tile.piece.endsWith('King')){
+              possibleMoves = this.kingPossibleMoves(tile.id, checkForWhite, true, JSON.parse(JSON.stringify(board)));
+            }
+            possibleMoves = this.removeCheckMateMoves(possibleMoves, {x: x, y: y}, checkForWhite, board);
+            totalMoves = [].concat(totalMoves, possibleMoves);
+            if(totalMoves.length > 0){
+              scanStatus = false;
+              break;
+            }
+          }
+        }
+        if(!scanStatus) break;
+      }
+      if(!scanStatus){
+        return false;
+      }
+      else{
+        if(totalMoves.length > 0) return false;
+        else return true;
+      }
+    }
+    else{
+      return false;
     }
   }
   removeCheckMateMoves(possibleMoves, focusData, isWhite, board){
