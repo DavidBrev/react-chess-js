@@ -8,8 +8,6 @@ Open and extract react-chess-js.7z (Releases section).
 
 Head into the folder and open the file index.html with the browser of your choice.
 
-**Note:** If you are not interested in the source code, you only need the build folder.
-
 ## Available Scripts
 
 In the project directory, you can run:
