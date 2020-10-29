@@ -182,7 +182,7 @@ export default class App extends React.Component{
       promotionInProgress : false
     }, () => {
       if(this.isCheckMate(this.state.isWhiteTurn)){
-        console.log(`${this.state.isWhiteTurn ? 'Black' : 'White'} wins !`);
+        window.vex.dialog.alert(`${this.state.isWhiteTurn ? 'Black' : 'White'} wins !`);
       }
     });
   }
@@ -295,7 +295,7 @@ export default class App extends React.Component{
           castleData : castleData
         }, () => {
           if(this.isCheckMate(this.state.isWhiteTurn)){
-            console.log(`${this.state.isWhiteTurn ? 'Black' : 'White'} wins !`);
+            window.vex.dialog.alert(`${this.state.isWhiteTurn ? 'Black' : 'White'} wins !`);
           }
         });
       }
@@ -716,7 +716,6 @@ export default class App extends React.Component{
       }
       possibleMoves = this.removeCheckMateMoves(possibleMoves, {x: x, y: y}, isWhite, board);
       if(possibleMoves.includes(castleRight) && !possibleMoves.includes(kingRight)){
-        console.log("called");
         possibleMoves = removeFromArray(possibleMoves, castleRight);
       }
       if(possibleMoves.includes(castleLeft) && !possibleMoves.includes(kingLeft)){
