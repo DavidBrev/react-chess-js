@@ -817,7 +817,7 @@ export default class App extends React.Component{
         possibleMoves = removeFromArray(possibleMoves, castleRight);
       }
       if(possibleMoves.includes(castleLeft) && !possibleMoves.includes(kingLeft)){
-        possibleMoves = removeFromArray(possibleMoves, castleRight);
+        possibleMoves = removeFromArray(possibleMoves, castleLeft);
       }
       for(let move of possibleMoves){
         board[move.y][move.x].activeState = true;
