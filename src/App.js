@@ -186,7 +186,12 @@ export default class App extends React.Component{
       }
     });
   }
-  generateNextBoard(tile, board = JSON.parse(JSON.stringify(this.state.actualBoard)), returnBoard = false, focusData = {x: this.state.focus.charCodeAt(1)-65, y: 8-Number(this.state.focus[0])}){
+  generateNextBoard(
+    tile,
+    board = JSON.parse(JSON.stringify(this.state.actualBoard)),
+    returnBoard = false,
+    focusData = {x: this.state.focus.charCodeAt(1)-65, y: 8-Number(this.state.focus[0])}
+  ){
     let wT = this.state.whiteTaken.slice();
     let bT = this.state.blackTaken.slice();
     let x = tile.id.charCodeAt(1)-65;
@@ -269,10 +274,16 @@ export default class App extends React.Component{
           if(p.endsWith("King") && !castleData[`${isWhite}KingHasMoved`]){
             castleData[`${isWhite}KingHasMoved`] = true;
           }
-          else if(p.endsWith("Rook") && !castleData[`${isWhite}RookHasMovedLeft`] && focusX === 0 && (p.startsWith('white') ? focusY === 7 : focusY === 0)){
+          else if(
+            p.endsWith("Rook") && !castleData[`${isWhite}RookHasMovedLeft`]
+            && focusX === 0 && (p.startsWith('white') ? focusY === 7 : focusY === 0)
+          ){
             castleData[`${isWhite}RookHasMovedLeft`] = true;
           }
-          else if(p.endsWith("Rook") && !castleData[`${isWhite}RookHasMovedRight`] && focusX === 7 && (p.startsWith('white') ? focusY === 7 : focusY === 0)){
+          else if(
+            p.endsWith("Rook") && !castleData[`${isWhite}RookHasMovedRight`]
+            && focusX === 7 && (p.startsWith('white') ? focusY === 7 : focusY === 0)
+          ){
             castleData[`${isWhite}RookHasMovedRight`] = true;
           }
         }
@@ -352,10 +363,16 @@ export default class App extends React.Component{
         if(y-1 >= 0){
           if(board[y-1][x].piece === null)
             possibleMoves.push({x : x, y: y-1});
-          if(x+1 <= 7 && ((board[y-1][x+1].piece !== null && board[y-1][x+1].piece.startsWith('black')) || (board[y][x+1].piece !== null && board[y][x+1].piece.startsWith('black') && y === this.state.possibleEnPassant.y && x+1 === this.state.possibleEnPassant.x)))
-            possibleMoves.push({x : x+1, y: y-1});
-          if(x-1 >= 0 && ((board[y-1][x-1].piece !== null && board[y-1][x-1].piece.startsWith('black')) || (board[y][x-1].piece !== null && board[y][x-1].piece.startsWith('black') && y === this.state.possibleEnPassant.y && x-1 === this.state.possibleEnPassant.x)))
-            possibleMoves.push({x : x-1, y: y-1});
+          if(
+            x+1 <= 7 && ((board[y-1][x+1].piece !== null && board[y-1][x+1].piece.startsWith('black'))
+            || (board[y][x+1].piece !== null && board[y][x+1].piece.startsWith('black')
+            && y === this.state.possibleEnPassant.y && x+1 === this.state.possibleEnPassant.x))
+          ) possibleMoves.push({x : x+1, y: y-1});
+          if(
+            x-1 >= 0 && ((board[y-1][x-1].piece !== null && board[y-1][x-1].piece.startsWith('black'))
+            || (board[y][x-1].piece !== null && board[y][x-1].piece.startsWith('black')
+            && y === this.state.possibleEnPassant.y && x-1 === this.state.possibleEnPassant.x))
+          ) possibleMoves.push({x : x-1, y: y-1});
         }
       }
     }
@@ -377,10 +394,16 @@ export default class App extends React.Component{
         if(y+1 <= 7){
           if(board[y+1][x].piece === null)
             possibleMoves.push({x : x, y: y+1});
-          if(x+1 <= 7 && ((board[y+1][x+1].piece !== null && board[y+1][x+1].piece.startsWith('white')) || (board[y][x+1].piece !== null && board[y][x+1].piece.startsWith('white') && y === this.state.possibleEnPassant.y && x+1 === this.state.possibleEnPassant.x)))
-            possibleMoves.push({x : x+1, y: y+1});
-          if(x-1 >= 0 && ((board[y+1][x-1].piece !== null && board[y+1][x-1].piece.startsWith('white')) || (board[y][x-1].piece !== null && board[y][x-1].piece.startsWith('white') && y === this.state.possibleEnPassant.y && x-1 === this.state.possibleEnPassant.x)))
-            possibleMoves.push({x : x-1, y: y+1});
+          if(
+            x+1 <= 7 && ((board[y+1][x+1].piece !== null && board[y+1][x+1].piece.startsWith('white'))
+            || (board[y][x+1].piece !== null && board[y][x+1].piece.startsWith('white')
+            && y === this.state.possibleEnPassant.y && x+1 === this.state.possibleEnPassant.x))
+          ) possibleMoves.push({x : x+1, y: y+1});
+          if(
+            x-1 >= 0 && ((board[y+1][x-1].piece !== null && board[y+1][x-1].piece.startsWith('white'))
+            || (board[y][x-1].piece !== null && board[y][x-1].piece.startsWith('white')
+            && y === this.state.possibleEnPassant.y && x-1 === this.state.possibleEnPassant.x))
+          ) possibleMoves.push({x : x-1, y: y+1});
         }
       }
     }
@@ -403,50 +426,98 @@ export default class App extends React.Component{
     let y = 8-Number(tileId[0]);
     if(y+2 < 8){
       if(x+2 < 8){
-        if(board[y+2][x+1].piece === null || (isWhite ? board[y+2][x+1].piece.startsWith('black') : board[y+2][x+1].piece.startsWith('white'))) possibleMoves.push({x : x+1, y : y+2});
-        if(board[y+1][x+2].piece === null || (isWhite ? board[y+1][x+2].piece.startsWith('black') : board[y+1][x+2].piece.startsWith('white'))) possibleMoves.push({x : x+2, y : y+1});
+        if(
+          board[y+2][x+1].piece === null
+          || (isWhite ? board[y+2][x+1].piece.startsWith('black') : board[y+2][x+1].piece.startsWith('white'))
+        ) possibleMoves.push({x : x+1, y : y+2});
+        if(
+          board[y+1][x+2].piece === null
+          || (isWhite ? board[y+1][x+2].piece.startsWith('black') : board[y+1][x+2].piece.startsWith('white'))
+        ) possibleMoves.push({x : x+2, y : y+1});
       }
       else if(x+1 < 8){
-        if(board[y+2][x+1].piece === null || (isWhite ? board[y+2][x+1].piece.startsWith('black') : board[y+2][x+1].piece.startsWith('white'))) possibleMoves.push({x : x+1, y : y+2});
+        if(
+          board[y+2][x+1].piece === null
+          || (isWhite ? board[y+2][x+1].piece.startsWith('black') : board[y+2][x+1].piece.startsWith('white'))
+        ) possibleMoves.push({x : x+1, y : y+2});
       }
       if(x-2 >= 0){
-        if(board[y+2][x-1].piece === null || (isWhite ? board[y+2][x-1].piece.startsWith('black') : board[y+2][x-1].piece.startsWith('white'))) possibleMoves.push({x : x-1, y : y+2});
-        if(board[y+1][x-2].piece === null || (isWhite ? board[y+1][x-2].piece.startsWith('black') : board[y+1][x-2].piece.startsWith('white'))) possibleMoves.push({x : x-2, y : y+1});
+        if(
+          board[y+2][x-1].piece === null
+          || (isWhite ? board[y+2][x-1].piece.startsWith('black') : board[y+2][x-1].piece.startsWith('white'))
+        ) possibleMoves.push({x : x-1, y : y+2});
+        if(
+          board[y+1][x-2].piece === null
+          || (isWhite ? board[y+1][x-2].piece.startsWith('black') : board[y+1][x-2].piece.startsWith('white'))
+        ) possibleMoves.push({x : x-2, y : y+1});
       }
       else if(x-1 >= 0){
-        if(board[y+2][x-1].piece === null || (isWhite ? board[y+2][x-1].piece.startsWith('black') : board[y+2][x-1].piece.startsWith('white'))) possibleMoves.push({x : x-1, y : y+2});
+        if(
+          board[y+2][x-1].piece === null
+          || (isWhite ? board[y+2][x-1].piece.startsWith('black') : board[y+2][x-1].piece.startsWith('white'))
+        ) possibleMoves.push({x : x-1, y : y+2});
       }
     }
     else if(y+1 < 8){
       if(x+2 < 8){
-        if(board[y+1][x+2].piece === null || (isWhite ? board[y+1][x+2].piece.startsWith('black') : board[y+1][x+2].piece.startsWith('white'))) possibleMoves.push({x : x+2, y : y+1});
+        if(
+          board[y+1][x+2].piece === null
+          || (isWhite ? board[y+1][x+2].piece.startsWith('black') : board[y+1][x+2].piece.startsWith('white'))
+        ) possibleMoves.push({x : x+2, y : y+1});
       }
       if(x-2 >= 0){
-        if(board[y+1][x-2].piece === null || (isWhite ? board[y+1][x-2].piece.startsWith('black') : board[y+1][x-2].piece.startsWith('white'))) possibleMoves.push({x : x-2, y : y+1});
+        if(
+          board[y+1][x-2].piece === null
+          || (isWhite ? board[y+1][x-2].piece.startsWith('black') : board[y+1][x-2].piece.startsWith('white'))
+        ) possibleMoves.push({x : x-2, y : y+1});
       }
     }
     if(y-2 >= 0){
       if(x+2 < 8){
-        if(board[y-2][x+1].piece === null || (isWhite ? board[y-2][x+1].piece.startsWith('black') : board[y-2][x+1].piece.startsWith('white'))) possibleMoves.push({x : x+1, y : y-2});
-        if(board[y-1][x+2].piece === null || (isWhite ? board[y-1][x+2].piece.startsWith('black') : board[y-1][x+2].piece.startsWith('white'))) possibleMoves.push({x : x+2, y : y-1});
+        if(
+          board[y-2][x+1].piece === null
+          || (isWhite ? board[y-2][x+1].piece.startsWith('black') : board[y-2][x+1].piece.startsWith('white'))
+        ) possibleMoves.push({x : x+1, y : y-2});
+        if(
+          board[y-1][x+2].piece === null
+          || (isWhite ? board[y-1][x+2].piece.startsWith('black') : board[y-1][x+2].piece.startsWith('white'))
+        ) possibleMoves.push({x : x+2, y : y-1});
       }
       else if(x+1 < 8){
-        if(board[y-2][x+1].piece === null || (isWhite ? board[y-2][x+1].piece.startsWith('black') : board[y-2][x+1].piece.startsWith('white'))) possibleMoves.push({x : x+1, y : y-2});
+        if(
+          board[y-2][x+1].piece === null
+          || (isWhite ? board[y-2][x+1].piece.startsWith('black') : board[y-2][x+1].piece.startsWith('white'))
+        ) possibleMoves.push({x : x+1, y : y-2});
       }
       if(x-2 >= 0){
-        if(board[y-2][x-1].piece === null || (isWhite ? board[y-2][x-1].piece.startsWith('black') : board[y-2][x-1].piece.startsWith('white'))) possibleMoves.push({x : x-1, y : y-2});
-        if(board[y-1][x-2].piece === null || (isWhite ? board[y-1][x-2].piece.startsWith('black') : board[y-1][x-2].piece.startsWith('white'))) possibleMoves.push({x : x-2, y : y-1});
+        if(
+          board[y-2][x-1].piece === null
+          || (isWhite ? board[y-2][x-1].piece.startsWith('black') : board[y-2][x-1].piece.startsWith('white'))
+        ) possibleMoves.push({x : x-1, y : y-2});
+        if(
+          board[y-1][x-2].piece === null
+          || (isWhite ? board[y-1][x-2].piece.startsWith('black') : board[y-1][x-2].piece.startsWith('white'))
+        ) possibleMoves.push({x : x-2, y : y-1});
       }
       else if(x-1 >= 0){
-        if(board[y-2][x-1].piece === null || (isWhite ? board[y-2][x-1].piece.startsWith('black') : board[y-2][x-1].piece.startsWith('white'))) possibleMoves.push({x : x-1, y : y-2});
+        if(
+          board[y-2][x-1].piece === null
+          || (isWhite ? board[y-2][x-1].piece.startsWith('black') : board[y-2][x-1].piece.startsWith('white'))
+        ) possibleMoves.push({x : x-1, y : y-2});
       }
     }
     else if(y-1 >= 0){
       if(x-2 >= 0){
-        if(board[y-1][x-2].piece === null || (isWhite ? board[y-1][x-2].piece.startsWith('black') : board[y-1][x-2].piece.startsWith('white'))) possibleMoves.push({x : x-2, y : y-1});
+        if(
+          board[y-1][x-2].piece === null
+          || (isWhite ? board[y-1][x-2].piece.startsWith('black') : board[y-1][x-2].piece.startsWith('white'))
+        ) possibleMoves.push({x : x-2, y : y-1});
       }
       if(x+2 < 8){
-        if(board[y-1][x+2].piece === null || (isWhite ? board[y-1][x+2].piece.startsWith('black') : board[y-1][x+2].piece.startsWith('white'))) possibleMoves.push({x : x+2, y : y-1});
+        if(
+          board[y-1][x+2].piece === null
+          || (isWhite ? board[y-1][x+2].piece.startsWith('black') : board[y-1][x+2].piece.startsWith('white'))
+        ) possibleMoves.push({x : x+2, y : y-1});
       }
     }
     if(returnData)
@@ -660,21 +731,39 @@ export default class App extends React.Component{
     let x = tileId.charCodeAt(1)-65;
     let y = 8-Number(tileId[0]);
     if(y-1 >= 0){
-      if(board[y-1][x].piece === null || (isWhite ? board[y-1][x].piece.startsWith('black') : board[y-1][x].piece.startsWith('white'))) possibleMoves.push({x : x, y : y-1});
+      if(
+        board[y-1][x].piece === null
+        || (isWhite ? board[y-1][x].piece.startsWith('black') : board[y-1][x].piece.startsWith('white'))
+      ) possibleMoves.push({x : x, y : y-1});
       if(x+1 < 8){
-        if(board[y-1][x+1].piece === null || (isWhite ? board[y-1][x+1].piece.startsWith('black') : board[y-1][x+1].piece.startsWith('white'))) possibleMoves.push({x : x+1, y : y-1});
+        if(
+          board[y-1][x+1].piece === null
+          || (isWhite ? board[y-1][x+1].piece.startsWith('black') : board[y-1][x+1].piece.startsWith('white'))
+        ) possibleMoves.push({x : x+1, y : y-1});
       }
       if(x-1 >= 0){
-        if(board[y-1][x-1].piece === null || (isWhite ? board[y-1][x-1].piece.startsWith('black') : board[y-1][x-1].piece.startsWith('white'))) possibleMoves.push({x : x-1, y : y-1});
+        if(
+          board[y-1][x-1].piece === null
+          || (isWhite ? board[y-1][x-1].piece.startsWith('black') : board[y-1][x-1].piece.startsWith('white'))
+        ) possibleMoves.push({x : x-1, y : y-1});
       }
     }
     if(y+1 < 8){
-      if(board[y+1][x].piece === null || (isWhite ? board[y+1][x].piece.startsWith('black') : board[y+1][x].piece.startsWith('white'))) possibleMoves.push({x : x, y : y+1});
+      if(
+        board[y+1][x].piece === null
+        || (isWhite ? board[y+1][x].piece.startsWith('black') : board[y+1][x].piece.startsWith('white'))
+      ) possibleMoves.push({x : x, y : y+1});
       if(x+1 < 8){
-        if(board[y+1][x+1].piece === null || (isWhite ? board[y+1][x+1].piece.startsWith('black') : board[y+1][x+1].piece.startsWith('white'))) possibleMoves.push({x : x+1, y : y+1});
+        if(
+          board[y+1][x+1].piece === null
+          || (isWhite ? board[y+1][x+1].piece.startsWith('black') : board[y+1][x+1].piece.startsWith('white'))
+        ) possibleMoves.push({x : x+1, y : y+1});
       }
       if(x-1 >= 0){
-        if(board[y+1][x-1].piece === null || (isWhite ? board[y+1][x-1].piece.startsWith('black') : board[y+1][x-1].piece.startsWith('white'))) possibleMoves.push({x : x-1, y : y+1});
+        if(
+          board[y+1][x-1].piece === null
+          || (isWhite ? board[y+1][x-1].piece.startsWith('black') : board[y+1][x-1].piece.startsWith('white'))
+        ) possibleMoves.push({x : x-1, y : y+1});
       }
     }
     //By checking the 2 conditions below on their own
@@ -684,31 +773,40 @@ export default class App extends React.Component{
     let kingLeft = null;
     let kingRight = null;
     if(x+1 < 8){
-      if(board[y][x+1].piece === null || (isWhite ? board[y][x+1].piece.startsWith('black') : board[y][x+1].piece.startsWith('white'))){
+      if(
+        board[y][x+1].piece === null
+        || (isWhite ? board[y][x+1].piece.startsWith('black') : board[y][x+1].piece.startsWith('white'))
+      ){
         possibleMoves.push({x : x+1, y : y});
         kingRight = possibleMoves[possibleMoves.length-1];
       }
     }
     if(x-1 >= 0){
-      if(board[y][x-1].piece === null || (isWhite ? board[y][x-1].piece.startsWith('black') : board[y][x-1].piece.startsWith('white'))) {
+      if(
+        board[y][x-1].piece === null
+        || (isWhite ? board[y][x-1].piece.startsWith('black') : board[y][x-1].piece.startsWith('white'))
+      ){
         possibleMoves.push({x : x-1, y : y});
         kingLeft = possibleMoves[possibleMoves.length-1];
       }
     }
-
     if(returnData){
       return possibleMoves;
     }
     else{
       let castleLeft = null;
       let castleRight = null;
-      if(isWhite ? this.state.whiteState !== 'Check' && !this.state.castleData['whiteKingHasMoved'] && !this.state.castleData['whiteRookHasMovedLeft'] : this.state.blackState !== 'Check' && !this.state.castleData['blackKingHasMoved']  && !this.state.castleData['blackRookHasMovedLeft']){
+      if(isWhite
+      ? this.state.whiteState !== 'Check' && !this.state.castleData['whiteKingHasMoved'] && !this.state.castleData['whiteRookHasMovedLeft']
+      : this.state.blackState !== 'Check' && !this.state.castleData['blackKingHasMoved'] && !this.state.castleData['blackRookHasMovedLeft']){
         if(board[y][x-1].piece === null && board[y][x-2].piece === null && board[y][x-3].piece === null){
           possibleMoves.push({x : x-2, y : y});
           castleLeft = possibleMoves[possibleMoves.length-1];
         }
       }
-      if(isWhite ? this.state.whiteState !== 'Check' && !this.state.castleData['whiteKingHasMoved'] && !this.state.castleData['whiteRookHasMovedRight'] : this.state.whiteState !== 'Check' && !this.state.castleData['blackKingHasMoved']  && !this.state.castleData['blackRookHasMovedRight']){
+      if(isWhite
+      ? this.state.whiteState !== 'Check' && !this.state.castleData['whiteKingHasMoved'] && !this.state.castleData['whiteRookHasMovedRight']
+      : this.state.whiteState !== 'Check' && !this.state.castleData['blackKingHasMoved'] && !this.state.castleData['blackRookHasMovedRight']){
         if(board[y][x+1].piece === null && board[y][x+2].piece === null){
           possibleMoves.push({x : x+2, y : y});
           castleRight = possibleMoves[possibleMoves.length-1];
@@ -745,35 +843,62 @@ export default class App extends React.Component{
     if(kingCoords !== null){
       let tileId = `${8-kingCoords.y}${String.fromCharCode(65+kingCoords.x)}`;
       //rookAndQueenCheck
-      let rookAndQueenCheck = this.rookPossibleMoves(tileId, checkForWhite ? true : false, true, JSON.parse(JSON.stringify(boardToCheck)));
+      let rookAndQueenCheck = this.rookPossibleMoves(
+        tileId,
+        checkForWhite ? true : false,
+        true,
+        JSON.parse(JSON.stringify(boardToCheck))
+      );
       for(let move of rookAndQueenCheck){
-        if(boardToCheck[move.y][move.x].piece === (checkForWhite ? 'blackRook' : 'whiteRook') || boardToCheck[move.y][move.x].piece === (checkForWhite ? 'blackQueen' : 'whiteQueen')){
+        if(boardToCheck[move.y][move.x].piece === (checkForWhite ? 'blackRook' : 'whiteRook')
+        || boardToCheck[move.y][move.x].piece === (checkForWhite ? 'blackQueen' : 'whiteQueen')){
           return true;
         }
       }
       //bishopAndQueenCheck
-      let bishopAndQueenCheck = this.bishopPossibleMoves(tileId, checkForWhite ? true : false, true, JSON.parse(JSON.stringify(boardToCheck)));
+      let bishopAndQueenCheck = this.bishopPossibleMoves(
+        tileId,
+        checkForWhite ? true : false,
+        true,
+        JSON.parse(JSON.stringify(boardToCheck))
+      );
       for(let move of bishopAndQueenCheck){
-        if(boardToCheck[move.y][move.x].piece === (checkForWhite ? 'blackBishop' : 'whiteBishop') || boardToCheck[move.y][move.x].piece === (checkForWhite ? 'blackQueen' : 'whiteQueen')){
+        if(boardToCheck[move.y][move.x].piece === (checkForWhite ? 'blackBishop' : 'whiteBishop')
+        || boardToCheck[move.y][move.x].piece === (checkForWhite ? 'blackQueen' : 'whiteQueen')){
           return true;
         }
       }
       //knightCheck
-      let knightCheck = this.knightPossibleMoves(tileId, checkForWhite ? true : false, true, JSON.parse(JSON.stringify(boardToCheck)));
+      let knightCheck = this.knightPossibleMoves(
+        tileId,
+        checkForWhite ? true : false,
+        true,
+        JSON.parse(JSON.stringify(boardToCheck))
+      );
       for(let move of knightCheck){
         if(boardToCheck[move.y][move.x].piece === (checkForWhite ? 'blackKnight' : 'whiteKnight')){
           return true;
         }
       }
       //kingCheck
-      let kingCheck = this.kingPossibleMoves(tileId, checkForWhite ? true : false, true, JSON.parse(JSON.stringify(boardToCheck)));
+      let kingCheck = this.kingPossibleMoves(
+        tileId,
+        checkForWhite ? true : false,
+        true,
+        JSON.parse(JSON.stringify(boardToCheck))
+      );
       for(let move of kingCheck){
         if(boardToCheck[move.y][move.x].piece === (checkForWhite ? 'blackKing' : 'whiteKing')){
           return true;
         }
       }
       //pawnCheck
-      let pawnCheck = this.pawnPossibleMoves(tileId, checkForWhite ? true : false, 2, JSON.parse(JSON.stringify(boardToCheck)));
+      let pawnCheck = this.pawnPossibleMoves(
+        tileId,
+        checkForWhite ? true : false,
+        2,
+        JSON.parse(JSON.stringify(boardToCheck))
+      );
       for(let move of pawnCheck){
         if(boardToCheck[move.y][move.x].piece === (checkForWhite ? 'blackPawn' : 'whitePawn')){
           return true;
@@ -797,7 +922,7 @@ export default class App extends React.Component{
             let x = tile.id.charCodeAt(1)-65;
             let y = 8-Number(tile.id[0]);
             if(tile.piece.endsWith('Pawn')){
-              possibleMoves = this.pawnPossibleMoves(tile.id, checkForWhite, 2, JSON.parse(JSON.stringify(board)));
+              possibleMoves = this.pawnPossibleMoves(tile.id, checkForWhite, 1, JSON.parse(JSON.stringify(board)));
             }
             else if(tile.piece.endsWith('Rook')){
               possibleMoves = this.rookPossibleMoves(tile.id, checkForWhite, true, JSON.parse(JSON.stringify(board)));
@@ -853,13 +978,21 @@ export default class App extends React.Component{
   render(){
     return(
       <div>
-        <Menu onGenerateNewBoard={this.generateNewBoardHandler} isWhiteTurn={this.state.isWhiteTurn} whiteState={this.state.whiteState} blackState={this.state.blackState} />
+        <Menu
+          onGenerateNewBoard={this.generateNewBoardHandler}
+          isWhiteTurn={this.state.isWhiteTurn} whiteState={this.state.whiteState}
+          blackState={this.state.blackState}
+        />
         <div className="gameDisplay">
           <PiecesTaken pieces={this.state.whiteTaken} isWhite={true} />
           <Board actualBoard={this.state.actualBoard} onTileClick={this.clickTileHandler} focus={this.state.focus} />
           <PiecesTaken pieces={this.state.blackTaken} isWhite={false} />
         </div>
-        <SelectReplacement onPromoteClick={this.clickPromotionHandler} selection={this.state.promotionInProgress} colorSelect={this.state.isWhiteTurn} />
+        <SelectReplacement
+          onPromoteClick={this.clickPromotionHandler}
+          selection={this.state.promotionInProgress}
+          colorSelect={this.state.isWhiteTurn}
+        />
       </div>
     );
   }
