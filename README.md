@@ -4,7 +4,9 @@ This is a simple chess game created using the [React](https://reactjs.org/) Java
 
 ## How to play
 
-Head into the build folder and open the index.html file with your browser.
+Open and extract react-chess-js.7z (Releases section).
+
+Head into the folder and open the file index.html with the browser of your choice.
 
 **Note:** If you are not interested in the source code, you only need the build folder.
 
