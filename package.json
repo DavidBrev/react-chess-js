@@ -1,6 +1,6 @@
 {
-  "name": "chess-js",
-  "version": "0.1.0",
+  "name": "react-chess-js",
+  "version": "1.0.0",
   "private": true,
   "homepage": "./",
   "dependencies": {
